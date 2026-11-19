@@ -1,0 +1,13 @@
+# Never commit real inventory data
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+*.ods
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/

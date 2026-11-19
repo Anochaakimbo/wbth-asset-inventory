@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WBTH Hardware Assets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family: "TH SarabunPSK Local"; src: local("TH SarabunPSK"), local("THSarabunPSK"), local("TH Sarabun PSK"); font-weight: 100 500; size-adjust: 132%; }
+@font-face { font-family: "TH SarabunPSK Local"; src: local("TH SarabunPSK Bold"), local("THSarabunPSK-Bold"), local("TH Sarabun PSK Bold"); font-weight: 600 900; size-adjust: 132%; }
+:root {
+  /* layout: fixed left sidebar (nav + file) · main column with a search bar on top · one view at a time: overview, assets table, people */
+  --paper: #ffffff;
+  --side: #fafafa;
+  --ink: #18181b;
+  --muted: #71717a;
+  --faint: #a1a1aa;
+  --line: #e4e4e7;
+  --soft: #f4f4f5;
+  --dep: #16a34a; --stock: #2563eb; --broken: #d97706; --ret: #a1a1aa;
+  --bad: #dc2626; --warn: #c2410c;
+  --font: "TH SarabunPSK Local", "Sarabun", "Leelawadee UI", Tahoma, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--paper); }
+body { color: var(--ink); font: 400 16px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { margin: 0; font-weight: 600; text-wrap: balance; }
+a { color: inherit; }
+.ic { width: 18px; height: 18px; flex: none; }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--paper); padding: 5px 12px; border-radius: 7px; cursor: pointer; font-weight: 500; white-space: nowrap; line-height: 1.4; }
+.btn:hover { background: var(--soft); }
+.btn .ic { width: 16px; height: 16px; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #000; }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.btn.ghost:hover { color: var(--ink); background: var(--soft); }
+.btn.danger { color: var(--bad); }
+.btn.sm { padding: 2px 10px; font-size: 15px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn .count { background: var(--ink); color: #fff; border-radius: 999px; font-size: 12px; min-width: 18px; padding: 0 5px; line-height: 18px; text-align: center; }
+.link { all: unset; cursor: pointer; color: var(--muted); font-size: 15px; display: inline-flex; align-items: center; gap: 2px; }
+.link:hover, .link:focus-visible { color: var(--ink); }
+
+/* shell */
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100%; }
+.side { background: var(--side); border-right: 1px solid var(--line); padding: 20px 14px; display: flex; flex-direction: column; gap: 22px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.brand { display: flex; gap: 10px; align-items: center; padding: 0 6px; }
+.logo { width: 32px; height: 32px; border-radius: 8px; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.brand b { display: block; font-size: 16px; line-height: 1.2; }
+.brand small { color: var(--muted); font-size: 13.5px; }
+.nav { display: grid; gap: 2px; }
+.nav a { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 7px; text-decoration: none; color: var(--muted); font-weight: 500; }
+.nav a:hover { background: #f0f0f1; color: var(--ink); }
+.nav a[aria-current="page"] { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+.nav .n { margin-left: auto; font-size: 13.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.side-file { margin-top: auto; border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 12px; display: grid; gap: 8px; font-size: 14.5px; }
+.side-file .fname { display: flex; gap: 8px; align-items: flex-start; font-weight: 500; overflow-wrap: anywhere; line-height: 1.35; }
+.side-file .fname .ic { color: var(--dep); margin-top: 1px; }
+.side-file p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.side-file .btn { width: 100%; }
+.tag-sample { display: inline-block; font-size: 12.5px; font-weight: 600; color: var(--warn); }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.top { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: center; padding: 10px 28px; flex-wrap: wrap; }
+.search-trigger { flex: 1 1 280px; max-width: 520px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); padding: 6px 10px; color: var(--faint); cursor: text; text-align: left; }
+.search-trigger:hover { border-color: #d4d4d8; }
+.search-trigger span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+kbd { font: 12px/1 var(--font); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 3px 5px; color: var(--muted); background: var(--paper); }
+.top-right { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pending { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--muted); }
+.pending b { color: var(--ink); font-weight: 600; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.pending .dot { background: var(--warn); }
+
+.view { padding: 26px 28px 56px; display: grid; gap: 20px; align-content: start; }
+.page-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end; justify-content: space-between; }
+.page-head h1 { font-size: 26px; line-height: 1.2; }
+.page-head p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+
+/* overview */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.kpi { all: unset; box-sizing: border-box; cursor: pointer; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 2px; }
+.kpi:hover, .kpi:focus-visible { border-color: var(--ink); }
+.kpi .lbl { color: var(--muted); font-size: 15px; display: flex; align-items: center; gap: 7px; }
+.kpi .val { font-size: 34px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.kpi .sub { color: var(--faint); font-size: 14px; }
+.kpi .sub b { color: var(--bad); font-weight: 600; }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 12px; }
+@media (max-width: 520px) { .cols2 { grid-template-columns: minmax(0, 1fr); } }
+.panel { border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.panel h2 { font-size: 17px; }
+.panel .hint { color: var(--faint); font-size: 14px; margin: -6px 0 0; }
+.bars { display: grid; gap: 2px; }
+.bar-row { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 22px minmax(90px, 1fr) minmax(60px, 1.3fr) 40px; gap: 10px; align-items: center; padding: 4px 6px; margin: 0 -6px; border-radius: 6px; font-size: 15px; }
+.bar-row.noicon { grid-template-columns: minmax(90px, 1fr) minmax(60px, 1.3fr) 40px; }
+.bar-row:hover, .bar-row:focus-visible { background: var(--soft); }
+.bar-row .ic { color: var(--muted); }
+.bar-row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.bar-fill { display: block; height: 100%; background: var(--ink); border-radius: 3px; }
+.bar-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.chart { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; align-items: end; height: 170px; padding-top: 6px; }
+.chart .col { display: grid; grid-template-rows: auto 1fr auto; height: 100%; text-align: center; gap: 4px; }
+.chart .cv { font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.chart .cv.zero { color: #d4d4d8; }
+.chart .slot { display: flex; align-items: flex-end; border-bottom: 1px solid var(--line); }
+.chart .b { display: block; width: 100%; background: var(--ink); border-radius: 3px 3px 0 0; min-height: 0; }
+.chart .col.now .b { background: var(--warn); }
+.chart .cm { font-size: 12.5px; color: var(--faint); white-space: nowrap; }
+.list { display: grid; }
+.li { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 6px; margin: 0 -6px; border-radius: 6px; }
+.li:hover, .li:focus-visible { background: var(--soft); }
+.li + .li { border-top: 1px solid var(--soft); }
+.li .t { min-width: 0; }
+.li .t b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.li .t small { color: var(--muted); font-size: 14px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.li .r { text-align: right; font-size: 14.5px; white-space: nowrap; }
+.li .r small { display: block; color: var(--faint); font-size: 13px; }
+.issue-n { font-weight: 600; font-variant-numeric: tabular-nums; }
+.empty-note { color: var(--faint); font-size: 15px; padding: 6px 0; }
+
+/* chips, status */
+.ibox { width: 32px; height: 32px; border-radius: 8px; background: var(--soft); display: grid; place-items: center; color: #52525b; flex: none; }
+.ibox .ic { width: 17px; height: 17px; }
+.st { display: inline-flex; align-items: center; gap: 6px; font-size: 14.5px; white-space: nowrap; }
+.st-dep .dot { background: var(--dep); }
+.st-stock .dot { background: var(--stock); }
+.st-broken .dot { background: var(--broken); }
+.st-ret { color: var(--muted); }
+.st-ret .dot { background: var(--ret); }
+.w-exp { color: var(--bad); }
+.w-soon { color: var(--warn); }
+.mark { font-size: 12.5px; font-weight: 600; margin-left: 6px; }
+.mark.new { color: var(--dep); }
+.mark.edited { color: var(--warn); }
+
+/* assets view */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { all: unset; cursor: pointer; padding: 6px 12px 8px; color: var(--muted); font-weight: 500; display: inline-flex; gap: 7px; align-items: center; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tab .n { color: var(--faint); font-size: 14px; font-variant-numeric: tabular-nums; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; position: relative; }
+.tsearch { flex: 1 1 260px; max-width: 460px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; color: var(--faint); }
+.tsearch:focus-within { border-color: var(--ink); }
+.tsearch input { border: 0; outline: none; flex: 1; min-width: 0; background: transparent; color: var(--ink); }
+.tsearch input::placeholder { color: var(--faint); }
+.toolbar .spacer { flex: 1; }
+.active-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.achip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: var(--soft); border-radius: 999px; padding: 1px 4px 1px 10px; font-size: 14.5px; }
+.achip span { color: var(--muted); }
+.achip button { all: unset; cursor: pointer; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.achip button:hover { background: var(--line); color: var(--ink); }
+.achip .ic { width: 14px; height: 14px; }
+.pop { position: absolute; z-index: 25; top: calc(100% + 6px); background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 16px 40px rgba(0,0,0,.10); padding: 14px; display: grid; gap: 12px; }
+.pop.filters { right: 0; width: min(560px, calc(100vw - 40px)); }
+.pop.columns { right: 0; width: 230px; gap: 2px; padding: 8px; }
+.pop h3 { font-size: 14px; color: var(--muted); font-weight: 500; }
+.pop .typegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0 10px; }
+.check { display: flex; gap: 8px; align-items: center; padding: 3px 4px; border-radius: 5px; cursor: pointer; font-size: 15px; }
+.check:hover { background: var(--soft); }
+.check input { accent-color: var(--ink); width: 15px; height: 15px; margin: 0; }
+.check .n { margin-left: auto; color: var(--faint); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.check.zero { color: #c4c4c8; }
+.selgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px 14px; }
+.fsel { display: grid; gap: 2px; font-size: 14px; color: var(--muted); min-width: 0; }
+.fsel select { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 7px; padding: 4px 8px; background: var(--paper); font-size: 15px; color: var(--ink); }
+.fsel select.on { border-color: var(--ink); }
+.pop-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
+
+.tablebox { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.table-wrap { overflow: auto; max-height: calc(100vh - 250px); min-height: 220px; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 15px; }
+thead th { position: sticky; top: 0; z-index: 2; background: var(--side); text-align: left; font-weight: 500; font-size: 14px; color: var(--muted); border-bottom: 1px solid var(--line); padding: 0; white-space: nowrap; }
+thead th button { all: unset; box-sizing: border-box; display: flex; gap: 4px; align-items: center; padding: 8px 12px; cursor: pointer; width: 100%; }
+thead th button:hover, thead th button.sorted { color: var(--ink); }
+thead th .arr { font-size: 10px; opacity: 0; }
+thead th button:hover .arr { opacity: .4; }
+thead th button.sorted .arr { opacity: 1; }
+thead th.plain { padding: 8px 12px; }
+tbody td { padding: 8px 12px; border-bottom: 1px solid var(--soft); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr[data-id] { cursor: pointer; }
+tbody tr[data-id]:hover td { background: #fafafa; }
+.cell-asset { display: flex; gap: 10px; align-items: center; min-width: 230px; }
+.cell-asset .t { min-width: 0; line-height: 1.3; }
+.cell-asset b { font-weight: 600; font-size: 15px; white-space: nowrap; }
+.cell-asset small { display: block; color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+.cell-two { line-height: 1.3; }
+.cell-two small { display: block; color: var(--muted); font-size: 13.5px; }
+.ownerlink { all: unset; cursor: pointer; font-weight: 500; }
+.ownerlink:hover, .ownerlink:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+td.nw { white-space: nowrap; }
+td.dimc, .dimc { color: #c4c4c8; }
+.tfoot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14.5px; background: var(--side); }
+.empty { text-align: center; color: var(--muted); padding: 48px 16px !important; cursor: default; }
+
+/* people */
+.people { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 980px) { .people { grid-template-columns: minmax(0, 1fr); } }
+.plist { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 170px); position: sticky; top: 74px; }
+@media (max-width: 980px) { .plist { position: static; max-height: 360px; } }
+.plist .tsearch { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; max-width: none; flex: none; padding: 9px 12px; }
+.plist ul { list-style: none; margin: 0; padding: 4px; overflow-y: auto; }
+.plist .grp { font-size: 13px; color: var(--faint); padding: 8px 8px 2px; }
+.pitem { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; gap: 10px; align-items: center; padding: 5px 8px; border-radius: 6px; }
+.pitem:hover { background: var(--soft); }
+.pitem[aria-current="true"] { background: var(--ink); color: #fff; }
+.pitem[aria-current="true"] small, .pitem[aria-current="true"] .n { color: rgba(255,255,255,.7); }
+.pitem .t { min-width: 0; flex: 1; line-height: 1.3; }
+.pitem .t span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pitem small { color: var(--muted); font-size: 13.5px; }
+.pitem .n { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.profile { display: grid; gap: 16px; }
+.phead { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+.avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--soft); border: 1px solid var(--line); display: grid; place-items: center; font-weight: 600; font-size: 19px; color: #3f3f46; flex: none; }
+.phead .who { flex: 1 1 220px; min-width: 0; }
+.phead h2 { font-size: 26px; line-height: 1.2; }
+.phead p { margin: 2px 0 0; color: var(--muted); }
+.phead .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.pstats { display: flex; flex-wrap: wrap; gap: 8px; }
+.pstat { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; display: flex; gap: 8px; align-items: center; font-size: 15px; }
+.pstat .ic { color: var(--muted); width: 16px; height: 16px; }
+.pstat b { font-variant-numeric: tabular-nums; }
+.alert { display: flex; gap: 8px; align-items: center; color: var(--warn); font-size: 15px; }
+.alert .ic { width: 16px; height: 16px; }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.18); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100%); background: var(--paper); z-index: 41; box-shadow: -16px 0 40px rgba(0,0,0,.08); display: flex; flex-direction: column; border-left: 1px solid var(--line); }
+.dhead { padding: 20px 22px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 12px; }
+.dtop { display: flex; gap: 12px; align-items: flex-start; }
+.dtop .ibox { width: 44px; height: 44px; border-radius: 10px; }
+.dtop .ibox .ic { width: 22px; height: 22px; }
+.dtop .t { flex: 1; min-width: 0; }
+.dtop h2 { font-size: 22px; line-height: 1.2; overflow-wrap: anywhere; }
+.dtop p { margin: 2px 0 0; color: var(--muted); }
+.dacts { display: flex; gap: 8px; flex-wrap: wrap; }
+.dbody { overflow-y: auto; padding: 6px 22px 22px; flex: 1; }
+.dsec { padding: 12px 0 4px; }
+.dsec h3 { font-size: 14px; color: var(--faint); font-weight: 500; margin-bottom: 4px; }
+.kv { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 2px 12px; padding: 5px 0; font-size: 15.5px; }
+.kv dt { color: var(--muted); font-size: 15px; }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.kv dd s { display: block; color: var(--faint); font-size: 14px; }
+.dfoot { padding: 10px 22px; border-top: 1px solid var(--line); color: var(--faint); font-size: 14px; display: flex; gap: 10px; align-items: center; }
+.dfoot .grow { flex: 1; }
+.iconbtn { all: unset; cursor: pointer; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 7px; color: var(--muted); flex: none; }
+.iconbtn:hover { background: var(--soft); color: var(--ink); }
+
+/* modal */
+.modal-wrap { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.2); }
+.modal-wrap.top { align-items: start; padding-top: 10vh; }
+.modal { background: var(--paper); border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,.14); width: min(860px, 100%); max-height: calc(100% - 16px); display: flex; flex-direction: column; border: 1px solid var(--line); }
+.modal.small { width: min(480px, 100%); }
+.modal.mid { width: min(620px, 100%); }
+.modal header { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; padding: 18px 22px 12px; border-bottom: 1px solid var(--line); }
+.modal header h2 { font-size: 21px; }
+.modal header p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+.modal .body { overflow-y: auto; padding: 4px 22px 16px; }
+.modal .body > p { margin: 12px 0 0; }
+.modal footer { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 22px; border-top: 1px solid var(--line); }
+.modal footer .grow { flex: 1; }
+fieldset { border: 0; margin: 0; padding: 14px 0 6px; border-bottom: 1px solid var(--soft); }
+fieldset:last-child { border-bottom: 0; }
+legend { font-weight: 600; font-size: 15px; padding: 0; margin-bottom: 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px 18px; }
+.field { display: grid; gap: 2px; min-width: 0; }
+.field label { font-size: 14.5px; color: var(--muted); }
+.field label .req { color: var(--bad); }
+.field input, .field textarea { width: 100%; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); font-size: 16px; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--ink); }
+.field input.invalid { border-color: var(--bad); }
+.note { font-size: 14px; color: var(--faint); }
+.note.warn { color: var(--warn); }
+.note.err { color: var(--bad); }
+.note button { all: unset; cursor: pointer; color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.hint { font-size: 14.5px; color: var(--faint); }
+.opts { display: grid; gap: 8px; margin-top: 14px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; cursor: pointer; }
+.opt:has(input:checked) { border-color: var(--ink); }
+.opt input { accent-color: var(--ink); margin-top: 5px; }
+.opt b { font-weight: 600; display: block; }
+.opt small { color: var(--muted); font-size: 14px; }
+.change-list { margin: 12px 0 0; padding: 10px 12px; background: var(--side); border-radius: 8px; font-size: 14.5px; color: var(--muted); display: grid; gap: 2px; }
+.change-list b { color: var(--ink); font-weight: 500; }
+.picklist { list-style: none; margin: 10px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 9px; max-height: 340px; overflow-y: auto; }
+.picklist li + li { border-top: 1px solid var(--soft); }
+.picklist label { display: grid; grid-template-columns: 18px 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 10px; cursor: pointer; }
+.picklist label:hover { background: var(--side); }
+.picklist input { accent-color: var(--ink); width: 15px; height: 15px; margin: 0; }
+.picklist .t b { font-weight: 500; display: block; }
+.picklist .t small { color: var(--muted); font-size: 14px; }
+
+/* command palette */
+.cmd { width: min(640px, 100%); }
+.cmd .cin { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--faint); }
+.cmd .cin input { flex: 1; border: 0; outline: none; font-size: 19px; color: var(--ink); background: transparent; }
+.cmd .cres { max-height: 60vh; overflow-y: auto; padding: 6px; }
+.cmd .cg { font-size: 13px; color: var(--faint); padding: 8px 10px 2px; }
+.citem { display: flex; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 7px; cursor: pointer; }
+.citem[aria-selected="true"] { background: var(--soft); }
+.citem .t { flex: 1; min-width: 0; line-height: 1.3; }
+.citem .t b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.citem .t small { color: var(--muted); font-size: 14px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.citem .r { color: var(--faint); font-size: 14px; white-space: nowrap; }
+.citem .av { width: 32px; height: 32px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: #3f3f46; flex: none; }
+.cmd .cfoot { border-top: 1px solid var(--line); padding: 8px 16px; color: var(--faint); font-size: 13.5px; display: flex; gap: 14px; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 8px; z-index: 60; max-width: calc(100% - 32px); font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+.drop { position: fixed; inset: 0; z-index: 70; background: rgba(255,255,255,.92); border: 2px dashed var(--ink); display: grid; place-items: center; font-size: 24px; font-weight: 600; pointer-events: none; }
+
+/* scanner */
+#scanRoot .modal-wrap { z-index: 55; }
+.modal .body.scan-body { display: grid; gap: 12px; padding-top: 14px; }
+.viewfinder { position: relative; background: #111; border-radius: 10px; overflow: hidden; aspect-ratio: 4 / 3; max-height: 52vh; }
+.viewfinder video, .viewfinder canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+.viewfinder video { object-fit: cover; }
+.viewfinder .guide { position: absolute; left: 8%; right: 8%; top: 18%; bottom: 18%; border: 2px solid rgba(255,255,255,.9); border-radius: 10px; box-shadow: 0 0 0 9999px rgba(0,0,0,.28); pointer-events: none; }
+.viewfinder .vstatus { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 14px 10px; color: #fff; font-size: 15px; background: linear-gradient(transparent, rgba(0,0,0,.65)); }
+.viewfinder.nocam { background: var(--side); border: 1px dashed #d4d4d8; aspect-ratio: auto; min-height: 120px; display: grid; place-items: center; }
+.viewfinder.nocam .vstatus { position: static; background: none; color: var(--muted); text-align: center; padding: 20px; }
+.scan-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.cands { display: grid; gap: 6px; }
+.cands h3 { font-size: 14px; color: var(--muted); font-weight: 500; }
+.cand { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; }
+.cand.best { border-color: var(--ink); }
+.cand .t { flex: 1; min-width: 0; line-height: 1.3; }
+.cand b { font-weight: 600; font-size: 17px; overflow-wrap: anywhere; letter-spacing: .02em; }
+.cand small { display: block; color: var(--muted); font-size: 13.5px; }
+.with-btn { display: flex; gap: 6px; }
+.with-btn input { flex: 1; min-width: 0; }
+.sqbtn { padding: 0 9px; }
+.scan-callout { display: flex; gap: 10px; align-items: center; margin-top: 14px; padding: 10px 12px; border: 1px dashed #d4d4d8; border-radius: 9px; color: var(--muted); font-size: 15px; flex-wrap: wrap; }
+.scan-callout span { flex: 1 1 220px; }
+.scan-callout .ic { color: var(--ink); }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .nav { grid-auto-flow: column; }
+  .nav .n { display: none; }
+  .side-file { margin-top: 0; flex: 1 1 100%; grid-template-columns: 1fr auto; align-items: center; }
+  .side-file p { display: none; }
+  .side-file .btn { width: auto; }
+  .top, .view { padding-left: 16px; padding-right: 16px; }
+  .top { position: static; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .drawer { animation: slide .16s ease-out; }
+  @keyframes slide { from { transform: translateX(16px); opacity: .7; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="logo">W</span><div><b>WBTH IT Assets</b><small>Hardware inventory</small></div></div>
+    <nav class="nav" aria-label="เมนูหลัก">
+      <a href="#overview" data-view="overview"><span data-ic="layout-dashboard"></span>ภาพรวม</a>
+      <a href="#assets" data-view="assets"><span data-ic="laptop"></span>อุปกรณ์<span class="n" id="navAssets"></span></a>
+      <a href="#people" data-view="people"><span data-ic="users"></span>ผู้ถือครอง<span class="n" id="navPeople"></span></a>
+    </nav>
+    <div class="side-file" id="sideFile"></div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <button class="search-trigger" type="button" id="cmdOpen"><span data-ic="search"></span><span>ค้นหาชื่อคน, Asset tag, Serial, Hostname…</span><kbd>Ctrl K</kbd></button>
+      <button class="btn" type="button" id="btnScan" title="สแกนบาร์โค้ดหรือ QR เพื่อค้นหาเครื่อง"><span data-ic="scan-barcode"></span>สแกน</button>
+      <div class="top-right">
+        <div class="pending" id="pending" hidden>
+          <span class="dot"></span><span id="pendingText"></span>
+          <button class="btn ghost sm" type="button" id="btnDiscard">ยกเลิก</button>
+          <button class="btn primary sm" type="button" id="btnExport"><span data-ic="download"></span>ดาวน์โหลด Excel</button>
+        </div>
+        <button class="btn" type="button" id="btnAdd"><span data-ic="plus"></span>เพิ่มอุปกรณ์</button>
+      </div>
+    </header>
+    <section class="view" id="view-overview" aria-label="ภาพรวม"></section>
+    <section class="view" id="view-assets" aria-label="อุปกรณ์" hidden></section>
+    <section class="view" id="view-people" aria-label="ผู้ถือครอง" hidden></section>
+  </div>
+</div>
+<div id="drawerRoot"></div>
+<div id="modalRoot"></div>
+<div id="cmdRoot"></div>
+<div id="scanRoot"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="drop" id="drop" hidden>วางไฟล์ .xlsx เพื่อเปิด</div>
+<input type="file" id="fileInput" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script>
+'use strict';
+(() => {
+const ICONS = {"layout-dashboard":"<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />","laptop":"<path d=\"M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16\" />","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","search":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","plus":"<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />","file-spreadsheet":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M8 13h2\" /> <path d=\"M14 13h2\" /> <path d=\"M8 17h2\" /> <path d=\"M14 17h2\" />","download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\" /> <line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\" /> <line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\" /> <line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\" /> <line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\" /> <line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\" /> <line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\" /> <line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\" /> <line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\" />","columns-3":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M9 3v18\" /> <path d=\"M15 3v18\" />","x":"<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" /> <path d=\"m15 5 4 4\" />","arrow-right-left":"<path d=\"m16 3 4 4-4 4\" /> <path d=\"M20 7H4\" /> <path d=\"m8 21-4-4 4-4\" /> <path d=\"M4 17h16\" />","undo-2":"<path d=\"M9 14 4 9l5-5\" /> <path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\" />","triangle-alert":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />","monitor":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\" /> <line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\" /> <line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\" />","mouse":"<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"7\" /> <path d=\"M12 6v4\" />","headphones":"<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\" />","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />","network":"<rect x=\"16\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"2\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"9\" y=\"2\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3\" /> <path d=\"M12 12V8\" />","cctv":"<path d=\"M16.75 12h3.632a1 1 0 0 1 .894 1.447l-2.034 4.069a1 1 0 0 1-1.708.134l-2.124-2.97\" /> <path d=\"M17.106 9.053a1 1 0 0 1 .447 1.341l-3.106 6.211a1 1 0 0 1-1.342.447L3.61 12.3a2.92 2.92 0 0 1-1.3-3.91L3.69 5.6a2.92 2.92 0 0 1 3.92-1.3z\" /> <path d=\"M2 19h3.76a2 2 0 0 0 1.8-1.1L9 15\" /> <path d=\"M2 21v-4\" /> <path d=\"M7 9h.01\" />","webcam":"<circle cx=\"12\" cy=\"10\" r=\"8\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" /> <path d=\"M7 22h10\" /> <path d=\"M12 22v-4\" />","plug":"<path d=\"M12 22v-5\" /> <path d=\"M9 8V2\" /> <path d=\"M15 8V2\" /> <path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z\" />","speaker":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" /> <path d=\"M12 6h.01\" /> <circle cx=\"12\" cy=\"14\" r=\"4\" /> <path d=\"M12 14h.01\" />","keyboard":"<path d=\"M10 8h.01\" /> <path d=\"M12 12h.01\" /> <path d=\"M14 8h.01\" /> <path d=\"M16 12h.01\" /> <path d=\"M18 8h.01\" /> <path d=\"M6 8h.01\" /> <path d=\"M7 16h10\" /> <path d=\"M8 12h.01\" /> <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" />","tv":"<rect width=\"20\" height=\"15\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\" /> <polyline points=\"17 2 12 7 7 2\" />","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\" /> <path d=\"M12 22V12\" /> <path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\" /> <path d=\"m7.5 4.27 9 5.15\" />","chevron-right":"<path d=\"m9 18 6-6-6-6\" />","folder-open":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\" />","file-down":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />","info":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />","scan-barcode":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M8 7v10\" /> <path d=\"M12 7v10\" /> <path d=\"M17 7v10\" />","scan-text":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M7 8h8\" /> <path d=\"M7 12h10\" /> <path d=\"M7 16h6\" />","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />"};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ICONS.package}</svg>`;
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const LS_KEY = 'wbth-hw-assets:v1';
+const LS_COLS = 'wbth-hw-assets:cols';
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const now = new Date();
+const TODAY = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+const SOON_DAYS = 90;
+
+const KEY_RULES = [
+  ['num', /^#/], ['asset', /^asset\s*serial/], ['type', /^type$/], ['desc', /^description/],
+  ['os', /^operating\s*system/], ['pserial', /^product\s*serial/], ['host', /^host\s*name/],
+  ['owner', /^asset\s*owner/], ['admin', /^asset\s*admin/], ['loc', /^location/],
+  ['start', /^start\s*date/], ['warranty', /^warranty\s*end/], ['poss', /^type\s*of\s*possession/],
+  ['dept', /^department/], ['claim', /^warranty\s*claim/], ['disposal', /^disposal/],
+  ['lic', /license/], ['autopilot', /autopilot/], ['note', /^note/]
+];
+const DATE_KEYS = new Set(['start', 'warranty']);
+const GROUPS = [
+  ['อุปกรณ์', ['type', 'desc', 'os', 'asset', 'pserial', 'host']],
+  ['ผู้ถือครอง', ['owner', 'dept', 'admin', 'loc']],
+  ['สัญญาและประกัน', ['start', 'warranty', 'poss', 'claim']],
+  ['สถานะในระบบ', ['disposal', 'lic', 'autopilot', 'note']]
+];
+const DEFAULT_FROM_DATA = ['admin', 'loc', 'poss', 'claim', 'disposal', 'note'];
+const FACETS = [
+  ['dept', 'Department'], ['loc', 'Location'], ['poss', 'Type of Possession'], ['_warranty', 'ประกัน'],
+  ['os', 'OS'], ['autopilot', 'AutoPilot'], ['lic', 'Win 11 Pro License'], ['disposal', 'Disposal']
+];
+const WARRANTY_LABEL = { expired: 'หมดประกันแล้ว', soon: `หมดภายใน ${SOON_DAYS} วัน`, ok: 'ยังอยู่ในประกัน', none: 'ไม่ระบุวันที่' };
+const STATUS = {
+  deployed: { label: 'ใช้งานอยู่', cls: 'st-dep' },
+  stock: { label: 'ในคลัง', cls: 'st-stock' },
+  broken: { label: 'ชำรุด', cls: 'st-broken' },
+  returned: { label: 'คืนแล้ว', cls: 'st-ret' }
+};
+const STATUS_ORDER = ['deployed', 'stock', 'broken', 'returned'];
+const STOCK_OWNERS = new Set(['', '-', 'n/a', 'na', 'none', 'it inventory', 'to be active', 'spare']);
+const CHECKIN = {
+  stock: { owner: 'IT Inventory', dept: 'N/A', label: 'เข้าคลัง IT', sub: 'พร้อมส่งมอบให้คนอื่นต่อ · Asset owner = IT Inventory' },
+  returned: { owner: 'Returned', dept: 'Returned', label: 'คืนแล้ว (Returned)', sub: 'เลิกใช้หรือคืนผู้ให้เช่า · Asset owner = Returned' },
+  broken: { owner: 'IT Inventory - Broken', dept: 'N/A', label: 'ชำรุด / ส่งซ่อม', sub: 'เก็บไว้ที่ IT แต่ยังใช้ไม่ได้ · Asset owner = IT Inventory - Broken' }
+};
+const ISSUES = {
+  expiredInUse: 'ใช้งานอยู่แต่หมดประกันแล้ว',
+  noAsset: 'ไม่มี Asset Serial No.',
+  dupAsset: 'Asset Serial No. ซ้ำกัน',
+  dupSerial: 'Product Serial No. ซ้ำกัน',
+  numSerial: 'Product Serial เก็บเป็นตัวเลข',
+  textDate: 'วันที่พิมพ์เป็นข้อความ'
+};
+const COLS = [
+  { id: 'asset', label: 'อุปกรณ์', always: true, sort: 'asset' },
+  { id: 'status', label: 'สถานะ', sort: '_status' },
+  { id: 'owner', label: 'ผู้ถือครอง', sort: 'owner' },
+  { id: 'type', label: 'Type', sort: 'type', off: true },
+  { id: 'host', label: 'Hostname', sort: 'host' },
+  { id: 'pserial', label: 'Product Serial', sort: 'pserial' },
+  { id: 'os', label: 'OS', sort: 'os', off: true },
+  { id: 'loc', label: 'Location', sort: 'loc' },
+  { id: 'poss', label: 'การถือครอง', sort: 'poss' },
+  { id: 'start', label: 'เริ่มใช้', sort: 'start', off: true },
+  { id: 'warranty', label: 'ประกันถึง', sort: 'warranty' },
+  { id: 'autopilot', label: 'AutoPilot', sort: 'autopilot', off: true },
+  { id: 'lic', label: 'Win 11 License', sort: 'lic', off: true },
+  { id: 'disposal', label: 'Disposal', sort: 'disposal', off: true },
+  { id: 'note', label: 'Note', sort: 'note' }
+];
+
+const S = {
+  mode: 'sample', fileName: '', asOf: '', sheetName: '', headerRow: 0, lastDataRow: 0,
+  headers: [], colByKey: {}, rows: [], mapping: {}, baseBuf: null,
+  view: 'overview', person: null, pq: '',
+  f: { status: 'all', types: new Set(), sel: {}, issue: null, q: '' },
+  sort: { key: null, dir: 1 }, hidden: new Set(COLS.filter(c => c.off).map(c => c.id)), storageOk: true
+};
+
+/* ---------- values ---------- */
+function cellVal(v) {
+  if (v === null || v === undefined) return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  if (typeof v === 'object') {
+    if (Array.isArray(v.richText)) return v.richText.map(t => t.text).join('');
+    if ('formula' in v || 'sharedFormula' in v || 'result' in v) return cellVal(v.result === undefined ? null : v.result);
+    if ('text' in v) return cellVal(v.text);
+    if ('error' in v) return String(v.error);
+    return String(v);
+  }
+  return v;
+}
+const fmtDate = d => `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+function txt(v) {
+  if (v === null || v === undefined) return '';
+  if (v instanceof Date) return isNaN(v) ? '' : fmtDate(v);
+  if (typeof v === 'number') return Number.isInteger(v) ? v.toLocaleString('en-US', { useGrouping: false }) : String(v);
+  return String(v);
+}
+function toDate(v) {
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  if (typeof v === 'string') {
+    const t = v.trim();
+    let m = t.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/);
+    if (m) return new Date(Date.UTC(+m[3], +m[2] - 1, +m[1]));
+    m = t.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  }
+  return null;
+}
+const isoDay = d => d ? d.toISOString().slice(0, 10) : '';
+const clean = s => txt(s).trim().replace(/\s+/g, ' ');
+const lower = s => clean(s).toLowerCase();
+const isBlank = v => v === null || v === undefined || (typeof v === 'string' && v.trim() === '');
+const NOT_ID = new Set(['', '-', 'n/a', 'na', 'none', 'returned']);
+const TEAMISH = /team|room|inventory|returned|^n\/?a$|^-$|appman|^to be|broken|^wbth|^none$/i;
+const col = key => S.colByKey[key];
+const get = (r, key) => (col(key) ? r.v[col(key)] : null);
+const daysLeft = r => { const d = toDate(get(r, 'warranty')); return d ? Math.round((d.getTime() - TODAY) / 864e5) : null; };
+function warrantyState(r) {
+  const n = daysLeft(r);
+  if (n === null) return 'none';
+  return n < 0 ? 'expired' : n <= SOON_DAYS ? 'soon' : 'ok';
+}
+function statusOf(r) {
+  const o = lower(get(r, 'owner')), d = lower(get(r, 'disposal'));
+  if (o === 'returned' || d === 'returned' || /^(yes|disposed|จำหน่าย)/.test(d)) return 'returned';
+  if (/broken|ชำรุด|เสีย|ซ่อม|repair/.test(o)) return 'broken';
+  if (STOCK_OWNERS.has(o)) return 'stock';
+  return 'deployed';
+}
+function typeIcon(t) {
+  t = String(t || '').toLowerCase();
+  if (/laptop|pc|desktop|computer|notebook/.test(t)) return 'laptop';
+  if (/monitor/.test(t)) return 'monitor';
+  if (/display|tv/.test(t)) return 'tv';
+  if (/keyboard/.test(t)) return 'keyboard';
+  if (/mouse/.test(t)) return 'mouse';
+  if (/head ?set|headphone|wried|wired/.test(t)) return 'headphones';
+  if (/mobile|phone|ipad|tablet/.test(t)) return 'smartphone';
+  if (/network|switch|router|firewall/.test(t)) return 'network';
+  if (/security|cctv/.test(t)) return 'cctv';
+  if (/web ?cam/.test(t)) return 'webcam';
+  if (/adapter|charger|dock/.test(t)) return 'plug';
+  if (/speaker/.test(t)) return 'speaker';
+  return 'package';
+}
+function facetRaw(r, key) {
+  if (key === '_warranty') return warrantyState(r);
+  const t = clean(get(r, key));
+  if (key === 'lic' && /^[A-Z0-9]{5}(-[A-Z0-9]{5}){4}$/i.test(t)) return '__key';
+  return t;
+}
+function facetLabel(key, raw) {
+  if (key === '_warranty') return WARRANTY_LABEL[raw] || raw;
+  if (raw === '') return '(ว่าง)';
+  if (raw === '__key') return 'มี Product key';
+  return raw;
+}
+function prep(r) {
+  r._fk = {};
+  for (const k of ['type', 'owner', ...FACETS.map(f => f[0])]) r._fk[k] = facetRaw(r, k).toLowerCase();
+  r._st = statusOf(r);
+  r._hay = ['asset', 'pserial', 'host', 'desc', 'os', 'note', 'type', 'owner', 'dept', 'loc', 'lic']
+    .map(k => lower(get(r, k))).join(' \u0001 ');
+  return r;
+}
+function computeIssues() {
+  const count = key => { const m = new Map(); for (const r of S.rows) { const v = lower(get(r, key)); if (!NOT_ID.has(v)) m.set(v, (m.get(v) || 0) + 1); } return m; };
+  const aC = count('asset'), sC = count('pserial');
+  for (const r of S.rows) {
+    const s = new Set();
+    const a = lower(get(r, 'asset')), ps = lower(get(r, 'pserial'));
+    if (col('asset') && isBlank(get(r, 'asset'))) s.add('noAsset');
+    if (!NOT_ID.has(a) && aC.get(a) > 1) s.add('dupAsset');
+    if (!NOT_ID.has(ps) && sC.get(ps) > 1) s.add('dupSerial');
+    if (typeof get(r, 'pserial') === 'number') s.add('numSerial');
+    for (const k of ['start', 'warranty']) { const v = get(r, k); if (typeof v === 'string' && toDate(v)) s.add('textDate'); }
+    if (r._st === 'deployed' && warrantyState(r) === 'expired') s.add('expiredInUse');
+    r._issues = s;
+  }
+}
+function facetCounts(key, rows) {
+  const m = new Map();
+  for (const r of rows) {
+    const k = r._fk[key];
+    let e = m.get(k);
+    if (!e) { e = { key: k, labels: new Map(), n: 0 }; m.set(k, e); }
+    e.n++;
+    const raw = facetRaw(r, key); e.labels.set(raw, (e.labels.get(raw) || 0) + 1);
+  }
+  for (const e of m.values()) e.label = facetLabel(key, [...e.labels.entries()].sort((a, b) => b[1] - a[1])[0][0]);
+  return m;
+}
+function ownerIndex() {
+  const m = facetCounts('owner', S.rows); m.delete('');
+  const dept = new Map();
+  for (const r of S.rows) {
+    const o = r._fk.owner, d = clean(get(r, 'dept'));
+    if (!d || NOT_ID.has(d.toLowerCase())) continue;
+    const x = dept.get(o) || new Map(); x.set(d, (x.get(d) || 0) + 1); dept.set(o, x);
+  }
+  return [...m.values()].map(e => {
+    const dm = dept.get(e.key);
+    e.dept = dm ? [...dm.entries()].sort((a, b) => b[1] - a[1])[0][0] : '';
+    e.team = TEAMISH.test(e.key);
+    return e;
+  });
+}
+const initials = name => { const p = clean(name).split(' ').filter(Boolean); return ((p[0] || '?')[0] + (p[1] ? p[1][0] : (p[0] || '')[1] || '')).toUpperCase(); };
+
+/* ---------- workbook parsing ---------- */
+function headerKey(name) {
+  const t = name.trim().toLowerCase();
+  for (const [k, re] of KEY_RULES) if (re.test(t)) return k;
+  return null;
+}
+function findHeaderRow(ws) {
+  const max = Math.min(30, ws.rowCount);
+  for (let r = 1; r <= max; r++) {
+    let hit = false;
+    ws.getRow(r).eachCell(c => { if (/^asset\s*owner/i.test(String(cellVal(c.value) ?? '').trim())) hit = true; });
+    if (hit) return r;
+  }
+  return 0;
+}
+function parseWorkbook(wb) {
+  let ws = wb.worksheets.find(w => w.name.trim().toLowerCase() === 'hardware');
+  let hr = ws ? findHeaderRow(ws) : 0;
+  if (!hr) for (const w of wb.worksheets) { const h = findHeaderRow(w); if (h) { ws = w; hr = h; break; } }
+  if (!ws || !hr) throw new Error('ไม่พบชีต Hardware ที่มีคอลัมน์ "Asset owner" ในไฟล์นี้');
+  const headers = []; const used = new Set();
+  ws.getRow(hr).eachCell((c, colNo) => {
+    const name = String(cellVal(c.value) ?? '').trim();
+    if (!name) return;
+    let key = headerKey(name);
+    if (key && used.has(key)) key = null;
+    if (key) used.add(key);
+    headers.push({ col: colNo, name, key, label: key === 'num' ? '#' : name });
+  });
+  let asOf = '';
+  for (let r = 1; r < hr; r++) ws.getRow(r).eachCell(c => { const t = String(cellVal(c.value) ?? '').trim(); if (/^as of/i.test(t)) asOf = t; });
+  const numCol = headers.find(h => h.key === 'num')?.col;
+  const rows = []; let last = hr;
+  for (let r = hr + 1; r <= ws.rowCount; r++) {
+    const row = ws.getRow(r); const v = {}; let any = false, anyAtAll = false;
+    for (const h of headers) {
+      const val = cellVal(row.getCell(h.col).value);
+      v[h.col] = val;
+      if (!isBlank(val)) { anyAtAll = true; if (h.col !== numCol) any = true; }
+    }
+    if (anyAtAll) last = r;
+    if (any) rows.push({ id: 'r' + r, excelRow: r, v, orig: null, state: 'orig' });
+  }
+  const mapping = {};
+  const ms = wb.worksheets.find(w => w.name.trim().toLowerCase() === 'mapping');
+  if (ms) ms.eachRow((row, rn) => {
+    if (rn === 1) return;
+    const t = lower(cellVal(row.getCell(1).value)), c = clean(cellVal(row.getCell(2).value));
+    if (t && c) mapping[t] = c;
+  });
+  return { sheetName: ws.name, headerRow: hr, lastDataRow: last, headers, rows, asOf, mapping };
+}
+function applyParsed(p) {
+  S.sheetName = p.sheetName; S.headerRow = p.headerRow; S.lastDataRow = p.lastDataRow; S.asOf = p.asOf;
+  S.headers = p.headers; S.mapping = p.mapping; S.colByKey = {};
+  for (const h of p.headers) if (h.key) S.colByKey[h.key] = h.col;
+  S.rows = p.rows.map(prep);
+  computeIssues();
+}
+
+/* ---------- sample data (clearly fake) ---------- */
+function loadSample() {
+  const names = ['#', 'Asset Serial No.', 'Type ', 'Description', 'Operating system/ version', 'Product Serial No.', 'Hostname', 'Asset owner', 'Asset administrator', 'Location', 'Start date', 'Warranty End Date', 'Type of Possession', 'Department', 'Warranty Claimed', 'Disposal', 'Windows 11 Pro License', 'AutoPilot Status', 'Note'];
+  const D = s => new Date(s + 'T00:00:00Z');
+  const data = [
+    ['TH_Computer_901_001', 'PC / Laptop', 'Lenovo E14 G7', 'Windows 11', 'DEMO-SN-0001', 'WBTHDEMO01', 'Anan Sample', 'IT', 'Head Office', D('2026-06-09'), D('2027-06-08'), 'Purchased', 'Marketing', '-', 'No', 'No', 'Found', '-'],
+    ['TH_Monitor _901_001', 'Monitor', 'Xiaomi Monitor A27i', '-', 'DEMO-MN-0001', '-', 'Anan Sample', 'IT', 'Head Office', D('2026-06-09'), D('2027-06-08'), 'Purchased', 'Marketing', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Monitor _901_002', 'Monitor', 'Xiaomi Monitor A27i', '-', 'DEMO-MN-0002', '-', 'Anan Sample', 'IT', 'Head Office', D('2026-06-09'), D('2027-06-08'), 'Purchased', 'Marketing', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Accessory_901_001', 'Mouse', 'Logitech M240', '-', 'DEMO-MS-0001', '-', 'Anan Sample', 'IT', 'Head Office', D('2026-06-09'), D('2027-06-08'), 'Purchased', 'Marketing', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Computer_901_002', 'PC / Laptop', 'Dell 3420 i5', 'Windows 11', 'DEMO-SN-0002', 'WBTHDEMO02', 'Benja Example', 'IT', 'Head Office', D('2026-10-26'), D('2027-01-25'), 'Rental', 'Customer Service', '-', 'No', 'N/A', 'N/A', '3 months Contract'],
+    ['TH_Accessory_901_002', 'USB Wired Headset', 'Jabra Evolve 20', '-', 'DEMO-HS-0001', '-', 'Benja Example', 'IT', 'Head Office', D('2025-11-14'), D('2026-11-13'), 'Purchased', 'Customer Service', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Monitor _901_003', 'Monitor', 'AOC 27V5', '-', 'DEMO-MN-0003', '-', 'Benja Example', 'IT', 'Head Office', D('2024-01-19'), D('2026-01-19'), 'Purchased', 'Customer Service', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Computer_901_003', 'PC / Laptop', 'Lenovo X1 G12', 'Windows 11', 'DEMO-SN-0003', 'WBTHDEMO03', 'Chai Demo', 'IT', 'Head Office', D('2024-11-27'), D('2026-12-20'), 'Purchased', 'IT', '-', 'No', 'No', 'Found', '-'],
+    ['TH_Mobile_901_001', 'Mobile', 'Samsung Galaxy A17 5G', 'Android', 'DEMO-MB-0001', '-', 'Chai Demo', 'IT', 'Head Office', D('2025-08-11'), D('2026-08-11'), 'Purchased', 'IT', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Network_901_001', 'Network', 'Fortigate', 'FortiGate 201F', 'DEMO-FG-0001', '-', 'IT Team', 'IT', 'Server room', D('2023-11-25'), D('2026-11-01'), 'Purchased', 'IT', '-', 'No', 'No', 'No', '-'],
+    ['TH_Monitor _901_004', 'Monitor', 'Xiaomi Monitor A27i', '-', 'DEMO-MN-0004', '-', 'IT Inventory', 'IT', 'Head Office', D('2026-06-18'), D('2027-06-17'), 'Purchased', 'N/A', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Accessory_901_003', 'Adapter', 'Ugreen Multifunction Adapter', '-', 'DEMO-AD-0001', '-', 'IT Inventory', 'IT', 'Head Office', D('2026-06-18'), D('2027-06-17'), 'Purchased', 'N/A', '-', 'No', 'N/A', 'N/A', '-'],
+    ['TH_Computer_901_004', 'PC / Laptop', 'Lenovo E14', 'Windows 11', 'DEMO-SN-0004', 'WBTHDEMO04', 'Returned', 'IT', 'Head Office', D('2023-10-03'), D('2025-10-02'), 'Purchased', 'Returned', '-', 'Returned', 'Returned', 'Returned', '-'],
+    ['TH_Accessory_901_004', 'Speaker', 'Jabra Speak2 55', '-', 'DEMO-SP-0001', '-', 'Sample Meeting Room', 'IT', 'Head Office', D('2025-08-11'), D('2027-08-10'), 'Purchased', 'IT', '-', 'No', 'N/A', 'N/A', '-']
+  ];
+  const headers = names.map((n, i) => ({ col: i + 2, name: n.trim(), key: headerKey(n), label: i === 0 ? '#' : n.trim() }));
+  const rows = data.map((arr, i) => {
+    const v = { 2: i + 1 }; arr.forEach((x, j) => { v[j + 3] = x; });
+    return { id: 's' + i, excelRow: null, v, orig: null, state: 'orig' };
+  });
+  applyParsed({ sheetName: 'Hardware', headerRow: 6, lastDataRow: 6 + rows.length, headers, rows, asOf: '', mapping: { 'pc / laptop': 'Computer', monitor: 'Monitor', mouse: 'Accessory', network: 'Network', mobile: 'Mobile', adapter: 'Accessory', speaker: 'Accessory', 'usb wired headset': 'Accessory' } });
+  S.mode = 'sample'; S.fileName = ''; S.baseBuf = null; S.person = 'anan sample';
+}
+
+/* ---------- storage ---------- */
+function bufToB64(buf) {
+  const u = new Uint8Array(buf); let s = '';
+  for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+function b64ToBuf(b) { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; }
+const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+function snapshotChanges() {
+  return {
+    adds: S.rows.filter(r => r.state === 'new').map(r => ({ id: r.id, v: r.v })),
+    edits: S.rows.filter(r => r.state === 'edited').map(r => ({ excelRow: r.excelRow, v: r.v }))
+  };
+}
+function persist(withBase) {
+  if (S.mode !== 'file') return;
+  try {
+    let b64 = null;
+    if (!withBase) { const raw = localStorage.getItem(LS_KEY); if (raw) b64 = JSON.parse(raw).b64; }
+    if (!b64) b64 = bufToB64(S.baseBuf);
+    localStorage.setItem(LS_KEY, JSON.stringify({ name: S.fileName, b64, changes: snapshotChanges(), at: Date.now() }));
+    S.storageOk = true;
+  } catch (e) { S.storageOk = false; }
+}
+function applyChanges(ch) {
+  if (!ch) return;
+  const byRow = new Map(S.rows.map(r => [r.excelRow, r]));
+  for (const e of ch.edits || []) {
+    const r = byRow.get(e.excelRow); if (!r) continue;
+    r.orig = { ...r.v }; r.v = e.v; r.state = 'edited'; prep(r);
+  }
+  for (const a of ch.adds || []) S.rows.push(prep({ id: a.id, excelRow: null, v: a.v, orig: null, state: 'new' }));
+  computeIssues();
+}
+const reviveDates = obj => JSON.parse(JSON.stringify(obj), (k, val) => (typeof val === 'string' && ISO_RE.test(val) ? new Date(val) : val));
+
+/* ---------- loading files ---------- */
+async function loadBuffer(buf, name, changes) {
+  if (!window.ExcelJS) throw new Error('โหลดตัวอ่าน Excel (ExcelJS) ไม่สำเร็จ ตรวจการเชื่อมต่ออินเทอร์เน็ตแล้วรีเฟรชหน้า');
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf.slice(0));
+  applyParsed(parseWorkbook(wb));
+  S.mode = 'file'; S.fileName = name; S.baseBuf = buf;
+  if (changes) applyChanges(reviveDates(changes));
+}
+async function openFile(file) {
+  if (!file) return;
+  if (!/\.xlsx$/i.test(file.name)) { toast('รองรับเฉพาะไฟล์ .xlsx'); return; }
+  if (pendingCount() > 0 && S.mode === 'file') {
+    const ok = await confirmDialog('เปิดไฟล์ใหม่?', `มี ${pendingCount()} รายการที่ยังไม่ได้ดาวน์โหลดเป็น Excel ถ้าเปิดไฟล์ใหม่ รายการเหล่านี้จะหายไป`, 'เปิดไฟล์ใหม่');
+    if (!ok) return;
+  }
+  try {
+    await loadBuffer(await file.arrayBuffer(), file.name, null);
+    resetFilters(); S.person = null; S.pq = '';
+    persist(true); buildViews(); render();
+    toast(`เปิด ${file.name} แล้ว · ${S.rows.length} รายการจากชีต ${S.sheetName}` + (S.storageOk ? '' : ' · เบราว์เซอร์นี้เก็บไฟล์ไว้ไม่ได้ ถ้ารีเฟรชต้องเปิดใหม่'));
+  } catch (e) { console.error(e); toast(e && e.message ? e.message : 'อ่านไฟล์ไม่สำเร็จ'); }
+}
+function resetFilters() { S.f = { status: 'all', types: new Set(), sel: {}, issue: null, q: '' }; const q = $('#aq'); if (q) q.value = ''; }
+
+/* ---------- filtering ---------- */
+function passes(r, skip) {
+  const F = S.f;
+  if (skip !== 'status' && F.status !== 'all' && r._st !== F.status) return false;
+  if (skip !== 'type' && F.types.size && !F.types.has(r._fk.type)) return false;
+  for (const [k, val] of Object.entries(F.sel)) {
+    if (k === skip || val === null || val === undefined) continue;
+    if (r._fk[k] !== val) return false;
+  }
+  if (skip !== 'issue' && F.issue && !r._issues.has(F.issue)) return false;
+  if (F.q) for (const t of F.q.toLowerCase().split(/\s+/)) if (t && !r._hay.includes(t)) return false;
+  return true;
+}
+const filterCount = () => S.f.types.size + Object.values(S.f.sel).filter(v => v !== null && v !== undefined).length + (S.f.issue ? 1 : 0);
+
+/* ---------- navigation ---------- */
+function go(view, preset) {
+  if (preset) {
+    if ('person' in preset) S.person = preset.person;
+    if (['status', 'type', 'sel', 'issue'].some(k => k in preset)) {
+      resetFilters();
+      if (preset.status) S.f.status = preset.status;
+      if (preset.type) S.f.types.add(preset.type);
+      if (preset.sel) Object.assign(S.f.sel, preset.sel);
+      if (preset.issue) S.f.issue = preset.issue;
+    }
+  }
+  if (location.hash !== '#' + view) { S.view = view; history.replaceState(null, '', '#' + view); }
+  S.view = view;
+  closeDrawer(); render();
+  window.scrollTo({ top: 0 });
+}
+function readHash() {
+  const h = location.hash.replace('#', '');
+  S.view = ['overview', 'assets', 'people'].includes(h) ? h : 'overview';
+}
+
+/* ---------- render shell ---------- */
+function pendingCount() { return S.rows.filter(r => r.state !== 'orig').length; }
+function render() {
+  $$('.nav a').forEach(a => a.setAttribute('aria-current', a.dataset.view === S.view ? 'page' : 'false'));
+  $('#navAssets').textContent = S.rows.length;
+  $('#navPeople').textContent = ownerIndex().filter(o => !o.team).length;
+  renderFile(); renderPending();
+  for (const v of ['overview', 'assets', 'people']) $('#view-' + v).hidden = S.view !== v;
+  if (S.view === 'overview') renderOverview();
+  if (S.view === 'assets') renderAssets();
+  if (S.view === 'people') renderPeople();
+}
+function renderFile() {
+  const box = $('#sideFile');
+  if (S.mode === 'sample') {
+    box.innerHTML = `<span class="tag-sample">ข้อมูลตัวอย่าง</span><p>เปิดไฟล์ IT Asset Inventory (.xlsx) เพื่อใช้ข้อมูลจริง ไฟล์ถูกอ่านในเบราว์เซอร์นี้เท่านั้น</p><button class="btn primary" type="button" data-open>${ic('folder-open')}เปิดไฟล์ Excel</button>`;
+  } else {
+    box.innerHTML = `<div class="fname">${ic('file-spreadsheet')}<span>${esc(S.fileName)}</span></div><p>ชีต ${esc(S.sheetName)}${S.asOf ? ' · ' + esc(S.asOf) : ''}</p><button class="btn" type="button" data-open>${ic('folder-open')}เปิดไฟล์อื่น</button>`;
+  }
+  $$('[data-open]', box).forEach(b => b.onclick = pickFile);
+}
+function renderPending() {
+  const n = pendingCount();
+  $('#pending').hidden = n === 0;
+  const adds = S.rows.filter(r => r.state === 'new').length, edits = n - adds;
+  $('#pendingText').innerHTML = `${[adds ? `เพิ่ม <b>${adds}</b>` : '', edits ? `แก้ <b>${edits}</b>` : ''].filter(Boolean).join(' · ')} ยังไม่ได้บันทึกลง Excel`;
+  const b = $('#btnExport');
+  b.disabled = S.mode !== 'file';
+  b.title = S.mode === 'file' ? '' : 'เปิดไฟล์จริงก่อนจึงดาวน์โหลดได้';
+}
+function pickFile() { const fi = $('#fileInput'); fi.value = ''; fi.click(); }
+function statusHtml(r) { const s = STATUS[r._st]; return `<span class="st ${s.cls}"><span class="dot"></span>${s.label}</span>`; }
+function warrantyHtml(r, short) {
+  const v = get(r, 'warranty'); const t = clean(v);
+  if (!t) return '<span class="dimc">—</span>';
+  const s = warrantyState(r), n = daysLeft(r);
+  if (s === 'expired') return `<span class="w-exp">${esc(t)}</span>${short ? '' : ' <small class="w-exp">หมดแล้ว</small>'}`;
+  if (s === 'soon') return `<span class="w-soon">${esc(t)}</span> <small class="w-soon">อีก ${n} วัน</small>`;
+  return esc(t);
+}
+const assetTitle = r => clean(get(r, 'asset')) || 'ไม่มี Asset tag';
+const assetSub = r => [clean(get(r, 'desc')), clean(get(r, 'type'))].filter(Boolean).join(' · ');
+const iboxHtml = r => `<span class="ibox">${ic(typeIcon(get(r, 'type')))}</span>`;
+const mark = r => r.state === 'new' ? '<span class="mark new">ใหม่</span>' : r.state === 'edited' ? '<span class="mark edited">แก้ไข</span>' : '';
+
+/* ---------- overview ---------- */
+function renderOverview() {
+  const el = $('#view-overview');
+  const rows = S.rows;
+  const st = { deployed: 0, stock: 0, broken: 0, returned: 0 };
+  rows.forEach(r => st[r._st]++);
+  const active = rows.filter(r => r._st !== 'returned');
+  const soon = active.filter(r => warrantyState(r) === 'soon');
+  const expiredInUse = rows.filter(r => r._issues.has('expiredInUse'));
+  const types = [...facetCounts('type', active).values()].sort((a, b) => b.n - a.n);
+  const depts = [...facetCounts('dept', rows.filter(r => r._st === 'deployed')).values()].filter(e => !NOT_ID.has(e.key)).sort((a, b) => b.n - a.n).slice(0, 10);
+  const maxT = Math.max(1, ...types.map(t => t.n)), maxD = Math.max(1, ...depts.map(t => t.n));
+  // warranty by month (next 12 months)
+  const months = []; const base = new Date(TODAY);
+  for (let i = 0; i < 12; i++) { const y = base.getUTCFullYear(), m = base.getUTCMonth() + i; months.push({ y: y + Math.floor(m / 12), m: m % 12, n: 0 }); }
+  for (const r of active) { const d = toDate(get(r, 'warranty')); if (!d) continue; const mm = months.find(x => x.y === d.getUTCFullYear() && x.m === d.getUTCMonth()); if (mm) mm.n++; }
+  const maxM = Math.max(1, ...months.map(m => m.n));
+  const soonList = active.filter(r => { const n = daysLeft(r); return n !== null && n >= 0 && n <= SOON_DAYS; }).sort((a, b) => daysLeft(a) - daysLeft(b));
+  const issueCounts = Object.keys(ISSUES).map(k => ({ k, n: rows.filter(r => r._issues.has(k)).length })).filter(x => x.n);
+  const pct = n => rows.length ? Math.round(n * 100 / rows.length) : 0;
+  el.innerHTML = `
+    <div class="page-head"><div><h1>ภาพรวม</h1><p>${S.mode === 'sample' ? 'ข้อมูลตัวอย่าง' : esc([S.fileName, S.asOf].filter(Boolean).join(' · '))}</p></div></div>
+    <div class="kpis">
+      <button class="kpi" type="button" data-go="all"><span class="lbl">${ic('package')}อุปกรณ์ทั้งหมด</span><span class="val">${rows.length}</span><span class="sub">${types.length} ประเภท · คืนแล้ว ${st.returned}</span></button>
+      <button class="kpi" type="button" data-go="deployed"><span class="lbl"><span class="dot" style="background:var(--dep)"></span>ใช้งานอยู่</span><span class="val">${st.deployed}</span><span class="sub">${pct(st.deployed)}% ของทั้งหมด</span></button>
+      <button class="kpi" type="button" data-go="stock"><span class="lbl"><span class="dot" style="background:var(--stock)"></span>ในคลัง พร้อมส่งมอบ</span><span class="val">${st.stock}</span><span class="sub">${st.broken ? `ชำรุด ${st.broken} ชิ้น` : 'ไม่มีของชำรุด'}</span></button>
+      <button class="kpi" type="button" data-go="soon"><span class="lbl">${ic('shield-check')}ประกันหมดใน ${SOON_DAYS} วัน</span><span class="val">${soon.length}</span><span class="sub">${expiredInUse.length ? `<b>${expiredInUse.length}</b> ชิ้นใช้งานอยู่แต่หมดประกันแล้ว` : 'ไม่มีเครื่องที่หมดประกันค้างใช้งาน'}</span></button>
+    </div>
+    <div class="cols2">
+      <div class="panel"><div class="panel-head"><h2>ตามประเภท</h2><button class="link" type="button" data-go="all">ดูทั้งหมด${ic('chevron-right')}</button></div>
+        <p class="hint">ไม่นับที่คืนแล้ว</p>
+        <div class="bars">${types.map(t => `<button class="bar-row" type="button" data-type="${esc(t.key)}">${ic(typeIcon(t.label))}<span class="name">${esc(t.label || '(ไม่ระบุ)')}</span><span class="bar-track"><span class="bar-fill" style="display:block;width:${(t.n / maxT * 100).toFixed(1)}%"></span></span><span class="v">${t.n}</span></button>`).join('')}</div>
+      </div>
+      <div class="panel"><div class="panel-head"><h2>ตามแผนก</h2></div>
+        <p class="hint">เฉพาะที่ใช้งานอยู่ ${depts.length >= 10 ? '· 10 แผนกแรก' : ''}</p>
+        <div class="bars">${depts.length ? depts.map(t => `<button class="bar-row noicon" type="button" data-dept="${esc(t.key)}"><span class="name">${esc(t.label)}</span><span class="bar-track"><span class="bar-fill" style="display:block;width:${(t.n / maxD * 100).toFixed(1)}%"></span></span><span class="v">${t.n}</span></button>`).join('') : '<div class="empty-note">ยังไม่มีข้อมูลแผนก</div>'}</div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><h2>ประกันที่จะหมดใน 12 เดือนข้างหน้า</h2></div>
+      <p class="hint">จำนวนอุปกรณ์ (ไม่นับที่คืนแล้ว) ตามเดือนที่ประกันหมด</p>
+      <div class="chart">${months.map((m, i) => `<div class="col${i === 0 ? ' now' : ''}"><span class="cv${m.n ? '' : ' zero'}">${m.n}</span><span class="slot"><span class="b" style="height:${(m.n / maxM * 100).toFixed(1)}%"></span></span><span class="cm">${MON[m.m]} ${String(m.y).slice(2)}</span></div>`).join('')}</div>
+    </div>
+    <div class="cols2">
+      <div class="panel"><div class="panel-head"><h2>ประกันใกล้หมด</h2>${soonList.length ? `<button class="link" type="button" data-go="soon">ดูทั้งหมด ${soonList.length}${ic('chevron-right')}</button>` : ''}</div>
+        <div class="list">${soonList.length ? soonList.slice(0, 7).map(r => `<button class="li" type="button" data-asset="${esc(r.id)}">${iboxHtml(r)}<span class="t"><b>${esc(assetTitle(r))}</b><small>${esc(clean(get(r, 'desc')))} · ${esc(clean(get(r, 'owner')) || '—')}</small></span><span class="r w-soon">อีก ${daysLeft(r)} วัน<small>${esc(clean(get(r, 'warranty')))}</small></span></button>`).join('') : `<div class="empty-note">ไม่มีอุปกรณ์ที่ประกันจะหมดใน ${SOON_DAYS} วัน</div>`}</div>
+      </div>
+      <div class="panel"><div class="panel-head"><h2>สิ่งที่ต้องดูแล</h2></div>
+        <div class="list">${issueCounts.length ? issueCounts.map(x => `<button class="li" type="button" data-issue="${x.k}"><span class="ibox">${ic(x.k === 'expiredInUse' ? 'shield-check' : 'triangle-alert')}</span><span class="t"><b>${ISSUES[x.k]}</b><small>${issueHint(x.k)}</small></span><span class="r"><span class="issue-n">${x.n}</span></span></button>`).join('') : '<div class="empty-note">ไม่พบปัญหาในข้อมูล</div>'}</div>
+      </div>
+    </div>`;
+  $$('[data-go]', el).forEach(b => b.onclick = () => {
+    const g = b.dataset.go;
+    go('assets', g === 'soon' ? { sel: { _warranty: 'soon' }, status: 'all' } : { status: g });
+  });
+  $$('[data-type]', el).forEach(b => b.onclick = () => go('assets', { type: b.dataset.type }));
+  $$('[data-dept]', el).forEach(b => b.onclick = () => go('assets', { status: 'deployed', sel: { dept: b.dataset.dept } }));
+  $$('[data-issue]', el).forEach(b => b.onclick = () => go('assets', { issue: b.dataset.issue }));
+  $$('[data-asset]', el).forEach(b => b.onclick = () => openDrawer(b.dataset.asset));
+}
+function issueHint(k) {
+  return {
+    expiredInUse: 'วางแผนต่อประกันหรือเปลี่ยนเครื่อง',
+    noAsset: 'ยังไม่ได้ติด tag หรือยังไม่ได้กรอก',
+    dupAsset: 'tag เดียวกันอยู่หลายแถว',
+    dupSerial: 'serial เดียวกันอยู่หลายแถว',
+    numSerial: 'Excel อาจตัดหลักท้ายทิ้ง ควรพิมพ์ใหม่เป็นข้อความ',
+    textDate: 'เช่น 17/9/2026 ควรเป็นวันที่จริงของ Excel'
+  }[k] || '';
+}
+
+/* ---------- assets view ---------- */
+function buildViews() {
+  $('#view-assets').innerHTML = `
+    <div class="page-head"><div><h1>อุปกรณ์</h1><p id="aSub"></p></div></div>
+    <div class="tabs" role="tablist" id="aTabs"></div>
+    <div class="toolbar" id="aToolbar">
+      <label class="tsearch">${ic('search')}<input id="aq" type="search" placeholder="ค้นหา ชื่อคน, Asset tag, Serial, Hostname, รุ่น" autocomplete="off" aria-label="ค้นหาอุปกรณ์"></label>
+      <span class="spacer"></span>
+      <button class="btn" type="button" id="btnFilter" aria-expanded="false">${ic('sliders-horizontal')}ตัวกรอง<span class="count" id="fCount" hidden></span></button>
+      <button class="btn" type="button" id="btnCols" aria-expanded="false">${ic('columns-3')}คอลัมน์</button>
+      <button class="btn" type="button" id="btnCsv">${ic('file-down')}CSV</button>
+      <div class="pop filters" id="popFilters" hidden></div>
+      <div class="pop columns" id="popCols" hidden></div>
+    </div>
+    <div class="active-chips" id="aChips"></div>
+    <div class="tablebox"><div class="table-wrap"><table><thead><tr id="aHead"></tr></thead><tbody id="aBody"></tbody></table></div><div class="tfoot"><span id="aCount"></span><span>คลิกแถวเพื่อดูรายละเอียด ส่งมอบ หรือรับคืน</span></div></div>`;
+  const q = $('#aq'); q.value = S.f.q;
+  q.oninput = () => { S.f.q = q.value.trim(); renderAssets(); };
+  $('#btnFilter').onclick = e => { e.stopPropagation(); togglePop('popFilters', '#btnFilter', renderFilterPop); };
+  $('#btnCols').onclick = e => { e.stopPropagation(); togglePop('popCols', '#btnCols', renderColsPop); };
+  $('#btnCsv').onclick = exportCsv;
+  $('#aBody').addEventListener('click', e => {
+    const ob = e.target.closest('[data-owner]');
+    if (ob) { e.stopPropagation(); go('people', { person: ob.dataset.owner }); return; }
+    const tr = e.target.closest('tr[data-id]'); if (tr) openDrawer(tr.dataset.id);
+  });
+  $('#aBody').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('tr[data-id]')) openDrawer(e.target.dataset.id); });
+
+  $('#view-people').innerHTML = `
+    <div class="page-head"><div><h1>ผู้ถือครอง</h1><p>พิมพ์ชื่อเพื่อดูว่าแต่ละคนถืออุปกรณ์อะไรอยู่ ส่งมอบเพิ่ม หรือรับคืน</p></div></div>
+    <div class="people">
+      <div class="plist"><label class="tsearch">${ic('search')}<input id="pq" type="search" placeholder="ค้นหาชื่อ หรือแผนก" autocomplete="off" aria-label="ค้นหาชื่อผู้ถือครอง"></label><ul id="pUl"></ul></div>
+      <div id="pDetail"></div>
+    </div>`;
+  const pq = $('#pq'); pq.value = S.pq;
+  pq.oninput = () => { S.pq = pq.value.trim(); renderPeopleList(); };
+  pq.onkeydown = e => { if (e.key === 'Enter') { const first = $('#pUl [data-p]'); if (first) first.click(); } };
+}
+function renderAssets() {
+  const all = S.rows;
+  const base = all.filter(r => passes(r, 'status'));
+  const stc = { all: base.length, deployed: 0, stock: 0, broken: 0, returned: 0 };
+  base.forEach(r => stc[r._st]++);
+  const tabs = [['all', 'ทั้งหมด'], ...STATUS_ORDER.map(k => [k, STATUS[k].label])];
+  $('#aTabs').innerHTML = tabs.map(([k, l]) => `<button class="tab" role="tab" type="button" data-st="${k}" aria-selected="${S.f.status === k}">${k !== 'all' ? `<span class="dot" style="background:var(--${{ deployed: 'dep', stock: 'stock', broken: 'broken', returned: 'ret' }[k]})"></span>` : ''}${l}<span class="n">${stc[k]}</span></button>`).join('');
+  $$('#aTabs [data-st]').forEach(b => b.onclick = () => { S.f.status = b.dataset.st; renderAssets(); });
+  $('#aSub').textContent = 'สถานะคำนวณจากคอลัมน์ Asset owner และ Disposal ในไฟล์';
+  const fc = filterCount(); const fcEl = $('#fCount'); fcEl.hidden = !fc; fcEl.textContent = fc;
+  renderChips();
+  if (!$('#popFilters').hidden) renderFilterPop();
+
+  const cols = COLS.filter(c => (c.id === 'status' || c.always || col(c.id)) && !S.hidden.has(c.id));
+  $('#aHead').innerHTML = cols.map(c => {
+    const on = S.sort.key === c.sort;
+    return `<th scope="col" aria-sort="${on ? (S.sort.dir > 0 ? 'ascending' : 'descending') : 'none'}"><button type="button" data-sort="${c.sort}" class="${on ? 'sorted' : ''}">${esc(c.label)}<span class="arr">${on ? (S.sort.dir > 0 ? '▲' : '▼') : '▲'}</span></button></th>`;
+  }).join('');
+  $$('#aHead [data-sort]').forEach(b => b.onclick = () => {
+    const k = b.dataset.sort;
+    if (S.sort.key === k) { if (S.sort.dir > 0) S.sort.dir = -1; else S.sort = { key: null, dir: 1 }; } else S.sort = { key: k, dir: 1 };
+    renderAssets();
+  });
+  let rows = all.filter(r => passes(r));
+  rows = sortRows(rows);
+  $('#aCount').innerHTML = `แสดง <b>${rows.length}</b> จาก ${all.length} รายการ`;
+  $('#aBody').innerHTML = rows.length
+    ? rows.map(r => `<tr data-id="${esc(r.id)}" tabindex="0">${cols.map(c => cellHtml(r, c.id)).join('')}</tr>`).join('')
+    : `<tr><td class="empty" colspan="${cols.length}">ไม่มีอุปกรณ์ที่ตรงกับเงื่อนไขนี้${fc || S.f.q ? ' · ลองล้างตัวกรองหรือคำค้น' : ''}</td></tr>`;
+}
+function sortRows(rows) {
+  if (!S.sort.key) return rows;
+  const k = S.sort.key, d = S.sort.dir;
+  const val = r => {
+    if (k === '_status') return STATUS_ORDER.indexOf(r._st);
+    const v = get(r, k);
+    if (DATE_KEYS.has(k)) { const dt = toDate(v); return dt ? dt.getTime() : null; }
+    if (typeof v === 'number') return v;
+    const t = clean(v); return t === '' || t === '-' ? null : t.toLowerCase();
+  };
+  return rows.map(r => [val(r), r]).sort((a, b) => {
+    if (a[0] === null) return b[0] === null ? 0 : 1;
+    if (b[0] === null) return -1;
+    return (typeof a[0] === 'number' && typeof b[0] === 'number' ? a[0] - b[0] : String(a[0]).localeCompare(String(b[0]), 'en', { numeric: true })) * d;
+  }).map(x => x[1]);
+}
+function plain(r, key) { const t = clean(get(r, key)); return t && t !== '-' ? esc(t) : '<span class="dimc">—</span>'; }
+function cellHtml(r, id) {
+  switch (id) {
+    case 'asset': return `<td><div class="cell-asset">${iboxHtml(r)}<div class="t"><b>${esc(assetTitle(r))}</b>${mark(r)}<small>${esc(assetSub(r))}</small></div></div></td>`;
+    case 'status': return `<td class="nw">${statusHtml(r)}</td>`;
+    case 'owner': {
+      const o = clean(get(r, 'owner')); const d = clean(get(r, 'dept'));
+      if (!o || r._st !== 'deployed') return `<td class="nw"><span class="${o ? '' : 'dimc'}">${esc(o || '—')}</span></td>`;
+      return `<td class="nw"><div class="cell-two"><button class="ownerlink" type="button" data-owner="${esc(lower(o))}">${esc(o)}</button>${d && !NOT_ID.has(d.toLowerCase()) ? `<small>${esc(d)}</small>` : ''}</div></td>`;
+    }
+    case 'warranty': return `<td class="nw">${warrantyHtml(r, true)}</td>`;
+    case 'note': return `<td>${plain(r, 'note')}</td>`;
+    default: return `<td class="nw">${plain(r, id)}</td>`;
+  }
+}
+function renderChips() {
+  const chips = [];
+  const typeAll = facetCounts('type', S.rows);
+  for (const k of S.f.types) chips.push([`Type`, typeAll.get(k)?.label || k, () => S.f.types.delete(k)]);
+  for (const [k, v] of Object.entries(S.f.sel)) {
+    if (v === null || v === undefined) continue;
+    const f = FACETS.find(x => x[0] === k);
+    chips.push([f ? f[1] : k, k === '_warranty' ? WARRANTY_LABEL[v] : (facetCounts(k, S.rows).get(v)?.label ?? v), () => { S.f.sel[k] = null; }]);
+  }
+  if (S.f.issue) chips.push(['ต้องดูแล', ISSUES[S.f.issue], () => { S.f.issue = null; }]);
+  const box = $('#aChips');
+  box.hidden = !chips.length;
+  box.innerHTML = chips.map((c, i) => `<span class="achip"><span>${esc(c[0])}:</span>${esc(c[1])}<button type="button" data-rm="${i}" aria-label="เอาตัวกรอง ${esc(c[0])} ออก">${ic('x')}</button></span>`).join('') +
+    (chips.length > 1 ? '<button class="link" type="button" id="chipsClear">ล้างทั้งหมด</button>' : '');
+  $$('[data-rm]', box).forEach(b => b.onclick = () => { chips[+b.dataset.rm][2](); renderAssets(); });
+  const cc = $('#chipsClear', box); if (cc) cc.onclick = () => { const st = S.f.status, q = S.f.q; resetFilters(); S.f.status = st; S.f.q = q; $('#aq').value = q; renderAssets(); };
+}
+function togglePop(id, btnSel, fill) {
+  const p = $('#' + id); const open = p.hidden;
+  closePops();
+  if (open) { p.hidden = false; $(btnSel).setAttribute('aria-expanded', 'true'); fill(); }
+}
+function closePops() { $$('.pop').forEach(p => p.hidden = true); $$('#btnFilter,#btnCols').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+function renderFilterPop() {
+  const p = $('#popFilters');
+  const tBase = S.rows.filter(r => passes(r, 'type'));
+  const tc = facetCounts('type', tBase);
+  const tAll = [...facetCounts('type', S.rows).values()].sort((a, b) => b.n - a.n);
+  const facets = FACETS.filter(([k]) => k === '_warranty' ? col('warranty') : col(k));
+  const sels = facets.map(([k, label]) => {
+    const base = S.rows.filter(r => passes(r, k));
+    const counts = facetCounts(k, base);
+    const order = k === '_warranty' ? ['expired', 'soon', 'ok', 'none'] : null;
+    const items = [...facetCounts(k, S.rows).values()].sort(order ? (a, b) => order.indexOf(a.key) - order.indexOf(b.key) : (a, b) => b.n - a.n);
+    const cur = S.f.sel[k] ?? '__all';
+    return `<label class="fsel" for="fs_${k}">${esc(label)}<select id="fs_${k}" data-facet="${k}" class="${cur !== '__all' ? 'on' : ''}"><option value="__all">ทั้งหมด</option>${items.map(e => `<option value="${esc(e.key)}"${e.key === cur ? ' selected' : ''}>${esc(e.label)} (${counts.get(e.key)?.n || 0})</option>`).join('')}</select></label>`;
+  }).join('');
+  p.innerHTML = `<h3>Type</h3><div class="typegrid">${tAll.map(e => { const n = tc.get(e.key)?.n || 0; return `<label class="check${n ? '' : ' zero'}"><input type="checkbox" data-t="${esc(e.key)}"${S.f.types.has(e.key) ? ' checked' : ''}>${ic(typeIcon(e.label))}<span>${esc(e.label || '(ไม่ระบุ)')}</span><span class="n">${n}</span></label>`; }).join('')}</div>
+    <h3>เงื่อนไขอื่น</h3><div class="selgrid">${sels}</div>
+    <div class="pop-foot"><button class="link" type="button" id="fpClear">ล้างตัวกรอง</button><button class="btn sm primary" type="button" id="fpDone">เสร็จ</button></div>`;
+  p.onclick = e => e.stopPropagation();
+  $$('[data-t]', p).forEach(cb => cb.onchange = () => { if (cb.checked) S.f.types.add(cb.dataset.t); else S.f.types.delete(cb.dataset.t); renderAssets(); });
+  $$('[data-facet]', p).forEach(s => s.onchange = () => { S.f.sel[s.dataset.facet] = s.value === '__all' ? null : s.value; renderAssets(); });
+  $('#fpClear', p).onclick = () => { S.f.types.clear(); S.f.sel = {}; S.f.issue = null; renderAssets(); };
+  $('#fpDone', p).onclick = closePops;
+}
+function renderColsPop() {
+  const p = $('#popCols');
+  const avail = COLS.filter(c => !c.always && (c.id === 'status' || col(c.id)));
+  p.innerHTML = avail.map(c => `<label class="check"><input type="checkbox" data-c="${c.id}"${S.hidden.has(c.id) ? '' : ' checked'}><span>${esc(c.label)}</span></label>`).join('');
+  p.onclick = e => e.stopPropagation();
+  $$('[data-c]', p).forEach(cb => cb.onchange = () => {
+    if (cb.checked) S.hidden.delete(cb.dataset.c); else S.hidden.add(cb.dataset.c);
+    try { localStorage.setItem(LS_COLS, JSON.stringify([...S.hidden])); } catch (e) { /* ignore */ }
+    renderAssets();
+  });
+}
+
+/* ---------- people view ---------- */
+function renderPeople() {
+  const idx = ownerIndex();
+  if (S.person === null || !idx.find(o => o.key === S.person)) {
+    const top = idx.filter(o => !o.team).sort((a, b) => b.n - a.n)[0] || idx[0];
+    S.person = top ? top.key : null;
+  }
+  renderPeopleList(idx);
+  renderPersonDetail(idx);
+}
+function renderPeopleList(idx) {
+  idx = idx || ownerIndex();
+  const q = S.pq.toLowerCase();
+  const match = o => !q || o.key.includes(q) || o.dept.toLowerCase().includes(q);
+  const byName = (a, b) => a.label.localeCompare(b.label, 'en');
+  const people = idx.filter(o => !o.team && match(o)).sort(byName);
+  const others = idx.filter(o => o.team && match(o)).sort((a, b) => b.n - a.n);
+  const item = o => `<li><button class="pitem" type="button" data-p="${esc(o.key)}" aria-current="${o.key === S.person}"><span class="t"><span>${esc(o.label)}</span>${o.dept ? `<small>${esc(o.dept)}</small>` : ''}</span><span class="n">${o.n}</span></button></li>`;
+  $('#pUl').innerHTML = (people.length ? `<li class="grp">บุคคล · ${people.length}</li>${people.map(item).join('')}` : '') +
+    (others.length ? `<li class="grp">ทีม ห้อง และสถานะอื่น · ${others.length}</li>${others.map(item).join('')}` : '') +
+    (!people.length && !others.length ? `<li class="grp">ไม่พบชื่อ “${esc(S.pq)}”</li>` : '');
+  $$('#pUl [data-p]').forEach(b => b.onclick = () => { S.person = b.dataset.p; renderPeopleList(); renderPersonDetail(); });
+}
+function renderPersonDetail(idx) {
+  idx = idx || ownerIndex();
+  const box = $('#pDetail');
+  const o = idx.find(x => x.key === S.person);
+  if (!o) { box.innerHTML = '<div class="empty-note">เลือกชื่อจากรายการทางซ้าย</div>'; return; }
+  const mine = S.rows.filter(r => r._fk.owner === o.key);
+  const types = [...facetCounts('type', mine).values()].sort((a, b) => b.n - a.n);
+  const deployed = mine.filter(r => r._st === 'deployed');
+  const expired = mine.filter(r => warrantyState(r) === 'expired').length;
+  const depts = [...new Set(mine.map(r => clean(get(r, 'dept'))).filter(d => d && !NOT_ID.has(d.toLowerCase())))];
+  box.innerHTML = `<div class="profile">
+    <div class="phead">
+      <div class="avatar" aria-hidden="true">${esc(initials(o.label))}</div>
+      <div class="who"><h2>${esc(o.label)}</h2><p>${esc(depts.join(', ') || (o.team ? 'ทีม / สถานะ' : 'ไม่ระบุแผนก'))} · ถืออยู่ ${mine.length} ชิ้น</p></div>
+      <div class="acts">
+        <button class="btn primary" type="button" id="pCheckout">${ic('arrow-right-left')}ส่งมอบจากคลัง</button>
+        <button class="btn" type="button" id="pAdd">${ic('plus')}เพิ่มเครื่องใหม่</button>
+        <button class="btn" type="button" id="pCopy">${ic('copy')}คัดลอกรายการ</button>
+        ${deployed.length > 1 ? `<button class="btn" type="button" id="pReturnAll">${ic('undo-2')}รับคืนทั้งหมด</button>` : ''}
+      </div>
+    </div>
+    <div class="pstats">${types.map(t => `<span class="pstat">${ic(typeIcon(t.label))}${esc(t.label || '(ไม่ระบุ)')} <b>${t.n}</b></span>`).join('')}</div>
+    ${expired ? `<div class="alert">${ic('triangle-alert')}${expired} ชิ้นหมดประกันแล้ว</div>` : ''}
+    <div class="tablebox"><div class="table-wrap" style="max-height:none;min-height:0"><table>
+      <thead><tr><th class="plain">อุปกรณ์</th><th class="plain">สถานะ</th><th class="plain">Hostname / Serial</th><th class="plain">ประกันถึง</th><th class="plain"><span class="sr" style="position:absolute;left:-9999px">การทำงาน</span></th></tr></thead>
+      <tbody id="pBody">${mine.length ? mine.map(r => `<tr data-id="${esc(r.id)}" tabindex="0"><td><div class="cell-asset">${iboxHtml(r)}<div class="t"><b>${esc(assetTitle(r))}</b>${mark(r)}<small>${esc(assetSub(r))}</small></div></div></td><td class="nw">${statusHtml(r)}</td><td class="nw"><div class="cell-two">${plain(r, 'host')}<small>${clean(get(r, 'pserial')) && clean(get(r, 'pserial')) !== '-' ? esc(clean(get(r, 'pserial'))) : '—'}</small></div></td><td class="nw">${warrantyHtml(r)}</td><td class="nw" style="text-align:right">${r._st === 'deployed' ? `<button class="btn sm" type="button" data-checkin="${esc(r.id)}">${ic('undo-2')}รับคืน</button>` : ''}</td></tr>`).join('') : '<tr><td class="empty" colspan="5">ไม่มีอุปกรณ์</td></tr>'}</tbody>
+    </table></div></div>
+  </div>`;
+  $('#pCheckout').onclick = () => checkoutPicker(o.label, depts[0] || '');
+  $('#pAdd').onclick = () => openForm(null, { owner: o.label, dept: depts[0] || '' });
+  $('#pCopy').onclick = () => copyText(personText(o.label, mine), 'คัดลอกรายการอุปกรณ์แล้ว');
+  if ($('#pReturnAll')) $('#pReturnAll').onclick = () => checkinDialog(deployed);
+  $('#pBody').addEventListener('click', e => {
+    const ci = e.target.closest('[data-checkin]');
+    if (ci) { e.stopPropagation(); const r = S.rows.find(x => x.id === ci.dataset.checkin); if (r) checkinDialog([r]); return; }
+    const tr = e.target.closest('tr[data-id]'); if (tr) openDrawer(tr.dataset.id);
+  });
+}
+function personText(name, rows) {
+  const lines = [`อุปกรณ์ของ ${name} (${rows.length} รายการ)`];
+  rows.forEach((r, i) => {
+    const bits = [clean(get(r, 'type')), clean(get(r, 'desc'))].filter(Boolean).join(' – ');
+    const ids = [['Asset', get(r, 'asset')], ['S/N', get(r, 'pserial')], ['Host', get(r, 'host')]]
+      .filter(([, v]) => !NOT_ID.has(lower(v))).map(([k, v]) => `${k}: ${clean(v)}`).join(' | ');
+    lines.push(`${i + 1}. ${bits}${ids ? ' | ' + ids : ''}`);
+  });
+  return lines.join('\n');
+}
+
+/* ---------- edits ---------- */
+function sameVal(a, b) {
+  if (a instanceof Date || b instanceof Date) return a instanceof Date && b instanceof Date && a.getTime() === b.getTime();
+  return (isBlank(a) ? '' : a) === (isBlank(b) ? '' : b);
+}
+function setValues(r, changes) {
+  if (r.state === 'orig') r.orig = { ...r.v };
+  r.v = { ...r.v, ...changes };
+  if (r.state !== 'new') {
+    const changed = S.headers.some(h => !sameVal(r.v[h.col], r.orig[h.col]));
+    r.state = changed ? 'edited' : 'orig'; if (!changed) r.orig = null;
+  }
+  prep(r);
+}
+function noteWith(r, text) {
+  const cur = clean(get(r, 'note'));
+  if (!text) return get(r, 'note');
+  return cur && cur !== '-' ? `${cur} | ${text}` : text;
+}
+function afterChange(msg) {
+  computeIssues(); persist(false); render();
+  const d = $('#drawerRoot').dataset.id; if (d) openDrawer(d);
+  toast(msg + (S.mode === 'file' ? ' · กดดาวน์โหลด Excel เพื่อบันทึกลงไฟล์' : ' (ข้อมูลตัวอย่าง)'));
+}
+function changeRows(r, changes) {
+  return S.headers.filter(h => h.col in changes && !sameVal(changes[h.col], r.v[h.col]))
+    .map(h => `<div>${esc(h.label)}: ${esc(clean(r.v[h.col]) || '(ว่าง)')} → <b>${esc(clean(changes[h.col]) || '(ว่าง)')}</b></div>`).join('');
+}
+function checkinDialog(rows) {
+  const one = rows.length === 1 ? rows[0] : null;
+  const title = one ? `รับคืน ${assetTitle(one)}` : `รับคืน ${rows.length} ชิ้น`;
+  const who = clean(get(rows[0], 'owner'));
+  showModal(`<div class="modal small" role="dialog" aria-modal="true" aria-labelledby="ciT">
+    <header><div><h2 id="ciT">${esc(title)}</h2><p>จาก ${esc(who)}</p></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header>
+    <div class="body">
+      <div class="opts">${Object.entries(CHECKIN).map(([k, o], i) => `<label class="opt"><input type="radio" name="ci" value="${k}"${i === 0 ? ' checked' : ''}><span><b>${o.label}</b><small>${esc(o.sub)}</small></span></label>`).join('')}</div>
+      <div class="field" style="margin-top:12px"><label for="ciNote">หมายเหตุ (จะต่อท้ายคอลัมน์ Note)</label><input id="ciNote" type="text" placeholder="เช่น คืนวันลาออก สภาพดี" autocomplete="off"></div>
+      <div class="change-list" id="ciPrev"></div>
+    </div>
+    <footer><span class="grow"></span><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="button" id="ciOk">${ic('undo-2')}ยืนยันรับคืน</button></footer>
+  </div>`);
+  const build = r => { const o = CHECKIN[$('input[name=ci]:checked').value]; const ch = {}; if (col('owner')) ch[col('owner')] = o.owner; if (col('dept')) ch[col('dept')] = o.dept; const n = $('#ciNote').value.trim(); if (n && col('note')) ch[col('note')] = noteWith(r, n); return ch; };
+  const prev = () => { $('#ciPrev').innerHTML = one ? (changeRows(one, build(one)) || 'ไม่มีอะไรเปลี่ยน') : `จะเปลี่ยน Asset owner และ Department ของทั้ง ${rows.length} ชิ้น`; };
+  $$('input[name=ci]').forEach(x => x.onchange = prev); $('#ciNote').oninput = prev; prev();
+  $('#ciOk').onclick = () => { rows.forEach(r => setValues(r, build(r))); closeModal(); afterChange(`รับคืน ${one ? assetTitle(one) : rows.length + ' ชิ้น'} แล้ว`); };
+}
+function checkoutDialog(r) {
+  const idx = ownerIndex().filter(o => !o.team).sort((a, b) => a.label.localeCompare(b.label, 'en'));
+  const depts = [...facetCounts('dept', S.rows).values()].filter(e => !NOT_ID.has(e.key)).map(e => e.label);
+  const locs = [...facetCounts('loc', S.rows).values()].filter(e => e.key).map(e => e.label);
+  const curLoc = clean(get(r, 'loc'));
+  showModal(`<form class="modal small" role="dialog" aria-modal="true" aria-labelledby="coT" id="coForm" novalidate>
+    <header><div><h2 id="coT">ส่งมอบ ${esc(assetTitle(r))}</h2><p>${esc(assetSub(r))}</p></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header>
+    <div class="body">
+      ${r._st === 'broken' ? `<p class="note warn">เครื่องนี้มีสถานะชำรุด ตรวจให้แน่ใจว่าซ่อมแล้ว</p>` : ''}
+      <div class="grid" style="margin-top:12px;grid-template-columns:1fr">
+        <div class="field"><label for="coWho">ส่งมอบให้ <span class="req">*</span></label><input id="coWho" list="coWhoL" autocomplete="off" placeholder="พิมพ์ชื่อ"><datalist id="coWhoL">${idx.map(o => `<option value="${esc(o.label)}">${esc(o.dept)}</option>`).join('')}</datalist><div class="note" id="coWhoN"></div></div>
+        <div class="field"><label for="coDept">Department</label><input id="coDept" list="coDeptL" autocomplete="off"><datalist id="coDeptL">${depts.map(d => `<option value="${esc(d)}"></option>`).join('')}</datalist></div>
+        <div class="field"><label for="coLoc">Location</label><input id="coLoc" list="coLocL" autocomplete="off" value="${esc(curLoc || 'Head Office')}"><datalist id="coLocL">${locs.map(d => `<option value="${esc(d)}"></option>`).join('')}</datalist></div>
+        <div class="field"><label for="coNote">หมายเหตุ (จะต่อท้ายคอลัมน์ Note)</label><input id="coNote" autocomplete="off" placeholder="เช่น พนักงานใหม่เริ่มงาน 1 Dec"></div>
+      </div>
+    </div>
+    <footer><span class="grow"></span><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="submit">${ic('arrow-right-left')}ส่งมอบ</button></footer>
+  </form>`);
+  const who = $('#coWho');
+  who.oninput = () => {
+    const o = idx.find(x => x.key === who.value.trim().toLowerCase());
+    $('#coWhoN').textContent = o ? `ตอนนี้ถืออยู่ ${o.n} ชิ้น` : (who.value.trim() ? 'ชื่อใหม่ จะเพิ่มเป็นผู้ถือครองคนใหม่' : '');
+    if (o && o.dept && !$('#coDept').dataset.touched) $('#coDept').value = o.dept;
+  };
+  $('#coDept').oninput = e => { e.target.dataset.touched = '1'; };
+  $('#coForm').onsubmit = e => {
+    e.preventDefault();
+    const name = who.value.trim();
+    if (!name) { who.classList.add('invalid'); $('#coWhoN').className = 'note err'; $('#coWhoN').textContent = 'ต้องใส่ชื่อผู้รับ'; who.focus(); return; }
+    const ch = {};
+    if (col('owner')) ch[col('owner')] = name;
+    if (col('dept')) ch[col('dept')] = $('#coDept').value.trim() || null;
+    if (col('loc')) ch[col('loc')] = $('#coLoc').value.trim() || null;
+    const n = $('#coNote').value.trim(); if (n && col('note')) ch[col('note')] = noteWith(r, n);
+    setValues(r, ch); closeModal(); afterChange(`ส่งมอบ ${assetTitle(r)} ให้ ${name} แล้ว`);
+  };
+  who.focus();
+}
+function checkoutPicker(name, dept) {
+  const stock = S.rows.filter(r => r._st === 'stock');
+  showModal(`<div class="modal mid" role="dialog" aria-modal="true" aria-labelledby="cpT">
+    <header><div><h2 id="cpT">ส่งมอบให้ ${esc(name)}</h2><p>เลือกอุปกรณ์จากคลัง (${stock.length} ชิ้นพร้อมส่งมอบ)</p></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header>
+    <div class="body">
+      <label class="tsearch" style="margin-top:12px;max-width:none">${ic('search')}<input id="cpQ" type="search" placeholder="ค้นหา Type, รุ่น, Asset tag, Serial" autocomplete="off" aria-label="ค้นหาในคลัง"></label>
+      <ul class="picklist" id="cpList"></ul>
+    </div>
+    <footer><span class="hint grow" id="cpSel">ยังไม่ได้เลือก</span><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="button" id="cpOk" disabled>${ic('arrow-right-left')}ส่งมอบ</button></footer>
+  </div>`);
+  const chosen = new Set();
+  const draw = () => {
+    const q = $('#cpQ').value.trim().toLowerCase();
+    const list = stock.filter(r => !q || q.split(/\s+/).every(t => r._hay.includes(t)));
+    $('#cpList').innerHTML = list.length ? list.map(r => `<li><label><input type="checkbox" data-id="${esc(r.id)}"${chosen.has(r.id) ? ' checked' : ''}>${iboxHtml(r)}<span class="t"><b>${esc(assetTitle(r))}</b><small>${esc(assetSub(r))}${clean(get(r, 'pserial')) && clean(get(r, 'pserial')) !== '-' ? ' · S/N ' + esc(clean(get(r, 'pserial'))) : ''}</small></span><span class="hint">${esc(clean(get(r, 'owner')))}</span></label></li>`).join('') : '<li><div class="empty" style="padding:28px">ไม่มีของในคลังที่ตรงกับคำค้น</div></li>';
+    $$('#cpList [data-id]').forEach(cb => cb.onchange = () => { if (cb.checked) chosen.add(cb.dataset.id); else chosen.delete(cb.dataset.id); sel(); });
+  };
+  const sel = () => { $('#cpSel').textContent = chosen.size ? `เลือก ${chosen.size} ชิ้น` : 'ยังไม่ได้เลือก'; $('#cpOk').disabled = !chosen.size; };
+  $('#cpQ').oninput = draw; draw(); $('#cpQ').focus();
+  $('#cpOk').onclick = () => {
+    const rows = S.rows.filter(r => chosen.has(r.id));
+    rows.forEach(r => { const ch = {}; if (col('owner')) ch[col('owner')] = name; if (col('dept') && dept) ch[col('dept')] = dept; setValues(r, ch); });
+    closeModal(); afterChange(`ส่งมอบ ${rows.length} ชิ้นให้ ${name} แล้ว`);
+  };
+}
+
+/* ---------- drawer ---------- */
+function openDrawer(id) {
+  const r = S.rows.find(x => x.id === id); if (!r) { closeDrawer(); return; }
+  const kv = h => {
+    const v = r.v[h.col]; let t = clean(v);
+    let val = t ? esc(t) : '<span class="dimc">—</span>';
+    if (h.key === 'warranty' && t) val = warrantyHtml(r);
+    if (h.key === 'owner' && t && r._st === 'deployed') val = `<button class="ownerlink" type="button" data-owner="${esc(lower(v))}">${esc(t)}</button>`;
+    let old = '';
+    if (r.state === 'edited' && !sameVal(v, r.orig[h.col])) old = `<s>เดิม: ${esc(clean(r.orig[h.col]) || '(ว่าง)')}</s>`;
+    return `<div class="kv"><dt>${esc(h.label)}</dt><dd>${val}${old}</dd></div>`;
+  };
+  const used = new Set();
+  const sec = (title, keys) => {
+    const hs = keys.map(k => S.headers.find(h => h.key === k)).filter(Boolean);
+    hs.forEach(h => used.add(h.col));
+    return hs.length ? `<div class="dsec"><h3>${title}</h3><dl>${hs.map(kv).join('')}</dl></div>` : '';
+  };
+  const secs = [sec('ผู้ถือครอง', ['owner', 'dept', 'loc', 'admin']), sec('อุปกรณ์', ['type', 'desc', 'os', 'asset', 'pserial', 'host']), sec('สัญญาและประกัน', ['start', 'warranty', 'poss', 'claim']), sec('สถานะในระบบ', ['disposal', 'lic', 'autopilot', 'note'])];
+  const rest = S.headers.filter(h => !used.has(h.col) && h.key !== 'num');
+  if (rest.length) secs.push(`<div class="dsec"><h3>อื่นๆ</h3><dl>${rest.map(kv).join('')}</dl></div>`);
+  const main = r._st === 'deployed'
+    ? `<button class="btn primary" type="button" id="dIn">${ic('undo-2')}รับคืน</button>`
+    : `<button class="btn primary" type="button" id="dOut">${ic('arrow-right-left')}ส่งมอบ</button>`;
+  const root = $('#drawerRoot'); root.dataset.id = id;
+  root.innerHTML = `<div class="scrim" data-close></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dT">
+      <div class="dhead">
+        <div class="dtop">${iboxHtml(r)}<div class="t"><h2 id="dT">${esc(assetTitle(r))}${mark(r)}</h2><p>${esc(assetSub(r))}</p><div style="margin-top:4px">${statusHtml(r)}</div></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></div>
+        <div class="dacts">${r._st === 'returned' ? '' : main}<button class="btn" type="button" id="dEdit">${ic('pencil')}แก้ไข</button><button class="btn" type="button" id="dCopy">${ic('copy')}คัดลอก</button>
+          ${r.state === 'new' ? `<button class="btn danger" type="button" id="dDel">ลบรายการนี้</button>` : ''}${r.state === 'edited' ? `<button class="btn ghost" type="button" id="dRevert">คืนค่าเดิม</button>` : ''}</div>
+      </div>
+      <div class="dbody">${secs.join('')}</div>
+      <div class="dfoot">${ic('info')}<span class="grow">${r.excelRow ? `แถว ${r.excelRow} ในชีต ${esc(S.sheetName)}` : 'เพิ่มในหน้านี้ จะต่อท้ายชีตเมื่อดาวน์โหลด Excel'}</span></div>
+    </aside>`;
+  $$('[data-close]', root).forEach(b => b.onclick = closeDrawer);
+  $$('[data-owner]', root).forEach(b => b.onclick = () => go('people', { person: b.dataset.owner }));
+  if ($('#dIn')) $('#dIn').onclick = () => checkinDialog([r]);
+  if ($('#dOut')) $('#dOut').onclick = () => checkoutDialog(r);
+  $('#dEdit').onclick = () => openForm(r);
+  $('#dCopy').onclick = () => copyText(S.headers.map(h => `${h.label}: ${clean(r.v[h.col])}`).join('\n'), 'คัดลอกข้อมูลอุปกรณ์แล้ว');
+  if ($('#dDel')) $('#dDel').onclick = () => { S.rows = S.rows.filter(x => x !== r); closeDrawer(); afterChange('ลบรายการที่เพิ่มแล้ว'); };
+  if ($('#dRevert')) $('#dRevert').onclick = () => { r.v = r.orig; r.orig = null; r.state = 'orig'; prep(r); afterChange('คืนค่าเดิมแล้ว'); };
+}
+function closeDrawer() { const root = $('#drawerRoot'); root.innerHTML = ''; delete root.dataset.id; }
+
+/* ---------- add / edit form ---------- */
+function distinct(colNo, limit) {
+  const m = new Map();
+  for (const r of S.rows) { const t = clean(r.v[colNo]); if (t) m.set(t, (m.get(t) || 0) + 1); }
+  return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(e => e[0]);
+}
+function mostCommon(key) { const c = col(key); return c ? (distinct(c, 1)[0] || '') : ''; }
+function suggestAsset(type) {
+  const t = lower(type); if (!t) return null;
+  const re = /^(TH_([A-Za-z]+)\s*_)(\d+)_(\d+)$/;
+  const prefixes = new Map();
+  for (const r of S.rows) {
+    if (r._fk.type !== t) continue;
+    const m = clean(get(r, 'asset')).match(re);
+    if (m) prefixes.set(m[1], (prefixes.get(m[1]) || 0) + 1);
+  }
+  let prefix = [...prefixes.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (!prefix) { const cat = S.mapping[t]; if (!cat) return null; prefix = `TH_${cat}_`; }
+  const catKey = prefix.replace(/\s+/g, '').toLowerCase();
+  let maxB = -1, maxS = 0, bw = 3, sw = 3;
+  for (const r of S.rows) {
+    const m = clean(get(r, 'asset')).match(re); if (!m) continue;
+    if (m[1].replace(/\s+/g, '').toLowerCase() !== catKey) continue;
+    const b = +m[3], s = +m[4]; bw = m[3].length; sw = m[4].length;
+    if (b > maxB) { maxB = b; maxS = s; } else if (b === maxB && s > maxS) maxS = s;
+  }
+  const pad = (n, w) => String(n).padStart(w, '0');
+  if (maxB < 0) return { next: `${prefix}${pad(1, 3)}_${pad(1, 3)}`, fresh: null, last: null };
+  return { next: `${prefix}${pad(maxB, bw)}_${pad(maxS + 1, sw)}`, fresh: `${prefix}${pad(maxB + 1, bw)}_${pad(1, sw)}`, last: `${prefix}${pad(maxB, bw)}_${pad(maxS, sw)}` };
+}
+function openForm(r, preset) {
+  const isNew = !r;
+  const editable = S.headers.filter(h => h.key !== 'num');
+  const grouped = new Set();
+  const groups = GROUPS.map(([title, keys]) => {
+    const hs = keys.map(k => editable.find(h => h.key === k)).filter(Boolean);
+    hs.forEach(h => grouped.add(h.col));
+    return [title, hs];
+  });
+  const rest = editable.filter(h => !grouped.has(h.col));
+  if (rest.length) groups.push(['อื่นๆ', rest]);
+  const initial = {};
+  for (const h of editable) {
+    let v = r ? r.v[h.col] : null;
+    if (isNew) {
+      if (preset && h.key && preset[h.key]) v = preset[h.key];
+      else if (DEFAULT_FROM_DATA.includes(h.key)) v = mostCommon(h.key);
+    }
+    initial[h.col] = DATE_KEYS.has(h.key) ? isoDay(toDate(v)) : txt(v);
+  }
+  const lists = [];
+  const fieldHtml = h => {
+    const id = 'f_' + h.col;
+    const req = h.key === 'type' || h.key === 'desc';
+    let input;
+    if (DATE_KEYS.has(h.key)) input = `<input id="${id}" name="${h.col}" type="date" value="${esc(initial[h.col])}">`;
+    else {
+      const opts = distinct(h.col, h.key === 'owner' ? 400 : 80);
+      if (opts.length) lists.push(`<datalist id="dl_${h.col}">${opts.map(o => `<option value="${esc(o)}"></option>`).join('')}</datalist>`);
+      input = `<input id="${id}" name="${h.col}" type="text" autocomplete="off" spellcheck="false" ${opts.length ? `list="dl_${h.col}"` : ''} value="${esc(initial[h.col])}">`;
+      if (h.key === 'pserial') input = `<div class="with-btn">${input}<button class="btn sqbtn" type="button" data-scan title="สแกนบาร์โค้ด/QR หรือถ่ายรูปป้าย" aria-label="สแกน S/N">${ic('scan-barcode')}</button></div>`;
+    }
+    const rawOld = r ? r.v[h.col] : null;
+    const textDateNote = DATE_KEYS.has(h.key) && r && typeof rawOld === 'string' && rawOld.trim() ? `ในไฟล์เป็นข้อความ “${esc(rawOld.trim())}”` : '';
+    return `<div class="field"><label for="${id}">${esc(h.label)}${req ? ' <span class="req">*</span>' : ''}</label>${input}<div class="note" id="n_${h.col}">${textDateNote}</div></div>`;
+  };
+  const body = groups.filter(g => g[1].length).map(([title, hs]) => `<fieldset><legend>${esc(title)}</legend><div class="grid">${hs.map(fieldHtml).join('')}</div></fieldset>`).join('');
+  showModal(`<form class="modal" id="assetForm" novalidate role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <header><div><h2 id="mTitle">${isNew ? 'เพิ่มอุปกรณ์ใหม่' : 'แก้ไข ' + esc(assetTitle(r))}</h2><p>${isNew ? `จะต่อท้ายชีต ${esc(S.sheetName)} เมื่อดาวน์โหลด Excel` : (r.excelRow ? `แถว ${r.excelRow} ในชีต ${esc(S.sheetName)}` : 'รายการที่เพิ่มในหน้านี้')}</p></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header>
+      <div class="body">${isNew && col('pserial') ? `<div class="scan-callout">${ic('scan-barcode')}<span>มีป้ายที่ตัวเครื่อง? สแกนบาร์โค้ด/QR หรือถ่ายรูปป้าย แล้ว S/N จะถูกกรอกให้</span><button class="btn sm primary" type="button" data-scan>สแกนป้าย</button></div>` : ''}${body}${lists.join('')}</div>
+      <footer><span class="hint grow">บันทึกแล้วจะเก็บไว้ในหน้านี้ก่อน กด “ดาวน์โหลด Excel” เพื่อเขียนลงไฟล์</span><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="submit">${isNew ? 'เพิ่มรายการ' : 'บันทึก'}</button></footer>
+    </form>`);
+  const form = $('#assetForm');
+  for (const h of editable) initial[h.col] = form.querySelector(`[name="${h.col}"]`).value;
+  const fld = key => col(key) && form.querySelector(`[name="${col(key)}"]`);
+  const assetIn = fld('asset'), typeIn = fld('type');
+  let lastAuto = null;
+  const checkDupes = () => {
+    for (const key of ['asset', 'pserial', 'host']) {
+      const inp = fld(key); if (!inp) continue;
+      const note = $('#n_' + col(key));
+      const v = inp.value.trim().toLowerCase();
+      const dup = !NOT_ID.has(v) && S.rows.find(x => x !== r && lower(get(x, key)) === v);
+      const msg = dup ? `ซ้ำกับรายการของ ${clean(get(dup, 'owner')) || '-'}${dup.excelRow ? ` (แถว ${dup.excelRow})` : ''}` : '';
+      let d = note.querySelector('.dupe');
+      if (!d) { d = document.createElement('div'); d.className = 'dupe'; d.style.color = 'var(--warn)'; note.appendChild(d); }
+      d.textContent = msg;
+    }
+  };
+  const showSuggest = () => {
+    if (!assetIn || !typeIn || !isNew) { checkDupes(); return; }
+    const note = $('#n_' + col('asset'));
+    const sg = suggestAsset(typeIn.value);
+    if (sg && (assetIn.value.trim() === '' || assetIn.value === lastAuto)) { assetIn.value = sg.next; lastAuto = sg.next; }
+    note.innerHTML = sg ? `<div>${sg.last ? `ล่าสุดคือ ${esc(sg.last)} · ` : ''}แนะนำ <button type="button" data-fill="${esc(sg.next)}">${esc(sg.next)}</button>${sg.fresh ? ` หรือล็อตใหม่ <button type="button" data-fill="${esc(sg.fresh)}">${esc(sg.fresh)}</button>` : ''}</div>` : '';
+    $$('[data-fill]', note).forEach(b => b.onclick = () => { assetIn.value = b.dataset.fill; lastAuto = b.dataset.fill; checkDupes(); });
+    checkDupes();
+  };
+  typeIn && typeIn.addEventListener('input', showSuggest);
+  ['asset', 'pserial', 'host'].forEach(k => fld(k) && fld(k).addEventListener('input', checkDupes));
+  showSuggest();
+  $$('[data-scan]', form).forEach(b => b.onclick = () => openScanner({
+    mode: 'fill', onPick: (value, extra) => {
+      const inp = fld('pserial'); if (!inp) return;
+      inp.value = value; checkDupes();
+      const d = fld('desc'); if (extra.model && d && !d.value.trim()) { d.value = extra.model; d.classList.remove('invalid'); }
+      inp.focus();
+      toast(`ใส่ S/N ${value} แล้ว · ${extra.why}${extra.hit ? ' · S/N นี้มีอยู่แล้วในไฟล์' : ''} · ตรวจให้ตรงป้ายอีกครั้ง`);
+    }
+  }));
+  form.onsubmit = e => {
+    e.preventDefault();
+    let bad = null;
+    for (const key of ['type', 'desc']) {
+      const inp = fld(key); if (!inp) continue;
+      const empty = !inp.value.trim();
+      inp.classList.toggle('invalid', empty);
+      if (empty) { const n = $('#n_' + col(key)); n.className = 'note err'; n.textContent = 'ต้องกรอกช่องนี้'; bad = bad || inp; }
+    }
+    if (bad) { bad.focus(); return; }
+    const v = {};
+    for (const h of editable) {
+      const raw = form.querySelector(`[name="${h.col}"]`).value;
+      if (r && raw === initial[h.col]) continue;
+      if (DATE_KEYS.has(h.key)) v[h.col] = raw ? toDate(raw) : null;
+      else v[h.col] = raw.trim() === '' ? null : raw.trim();
+    }
+    if (isNew) {
+      const numCol = col('num');
+      if (numCol) { const max = S.rows.reduce((m, x) => typeof x.v[numCol] === 'number' && x.v[numCol] > m ? x.v[numCol] : m, 0); v[numCol] = max + 1; }
+      const nr = prep({ id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), excelRow: null, v, orig: null, state: 'new' });
+      S.rows.push(nr);
+      closeModal(); afterChange(`เพิ่ม ${clean(v[col('asset')]) || clean(v[col('desc')])} แล้ว`);
+    } else {
+      setValues(r, v); closeModal(); afterChange('บันทึกการแก้ไขแล้ว');
+    }
+  };
+  (typeIn || form.querySelector('input')).focus();
+}
+
+/* ---------- command palette ---------- */
+let cmdIdx = 0, cmdItems = [];
+function openCmd() {
+  $('#cmdRoot').innerHTML = `<div class="modal-wrap top" data-backdrop><div class="modal cmd" role="dialog" aria-modal="true" aria-label="ค้นหา">
+    <div class="cin">${ic('search')}<input id="cmdQ" type="text" placeholder="พิมพ์ชื่อคน, Asset tag, Serial, Hostname หรือรุ่น" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="cmdRes"></div>
+    <div class="cres" id="cmdRes" role="listbox"></div>
+    <div class="cfoot"><span>↑↓ เลือก</span><span>Enter เปิด</span><span>Esc ปิด</span></div>
+  </div></div>`;
+  const q = $('#cmdQ');
+  $('[data-backdrop]', $('#cmdRoot')).addEventListener('mousedown', e => { if (e.target.dataset.backdrop !== undefined) closeCmd(); });
+  q.oninput = () => { cmdIdx = 0; drawCmd(); };
+  q.onkeydown = e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); cmdIdx = Math.min(cmdIdx + 1, cmdItems.length - 1); drawCmd(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); cmdIdx = Math.max(cmdIdx - 1, 0); drawCmd(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (cmdItems[cmdIdx]) runCmd(cmdItems[cmdIdx]); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeCmd(); }
+  };
+  drawCmd(); q.focus();
+}
+function closeCmd() { $('#cmdRoot').innerHTML = ''; }
+function drawCmd() {
+  const q = ($('#cmdQ').value || '').trim().toLowerCase();
+  const idx = ownerIndex();
+  let people, assets;
+  if (!q) {
+    people = idx.filter(o => !o.team).sort((a, b) => b.n - a.n).slice(0, 5);
+    assets = [];
+  } else {
+    people = idx.filter(o => o.key.includes(q)).sort((a, b) => (b.key.startsWith(q) - a.key.startsWith(q)) || (a.team - b.team) || (b.n - a.n)).slice(0, 6);
+    const toks = q.split(/\s+/);
+    assets = S.rows.filter(r => toks.every(t => r._hay.includes(t))).slice(0, 8);
+  }
+  cmdItems = [...people.map(o => ({ kind: 'p', o })), ...assets.map(r => ({ kind: 'a', r }))];
+  if (cmdIdx >= cmdItems.length) cmdIdx = Math.max(0, cmdItems.length - 1);
+  let i = 0;
+  const pHtml = people.map(o => `<div class="citem" role="option" data-i="${i}" aria-selected="${i++ === cmdIdx}"><span class="av">${esc(initials(o.label))}</span><span class="t"><b>${esc(o.label)}</b><small>${esc(o.dept || (o.team ? 'ทีม / สถานะ' : ''))}</small></span><span class="r">${o.n} ชิ้น</span></div>`).join('');
+  const aHtml = assets.map(r => `<div class="citem" role="option" data-i="${i}" aria-selected="${i++ === cmdIdx}">${iboxHtml(r)}<span class="t"><b>${esc(assetTitle(r))}</b><small>${esc(assetSub(r))} · ${esc(clean(get(r, 'owner')) || '—')}</small></span><span class="r">${statusHtml(r)}</span></div>`).join('');
+  $('#cmdRes').innerHTML = (pHtml ? `<div class="cg">${q ? 'ผู้ถือครอง' : 'ถืออุปกรณ์มากที่สุด'}</div>${pHtml}` : '') + (aHtml ? `<div class="cg">อุปกรณ์</div>${aHtml}` : '') +
+    (!cmdItems.length ? `<div class="empty-note" style="padding:20px 12px">ไม่พบ “${esc(q)}”</div>` : '');
+  $$('#cmdRes [data-i]').forEach(el => { el.onmousedown = e => { e.preventDefault(); runCmd(cmdItems[+el.dataset.i]); }; });
+  const sel = $('#cmdRes [aria-selected="true"]'); if (sel) sel.scrollIntoView({ block: 'nearest' });
+}
+function runCmd(it) {
+  closeCmd();
+  if (it.kind === 'p') go('people', { person: it.o.key });
+  else openDrawer(it.r.id);
+}
+
+/* ---------- scanner: barcode / QR / OCR ---------- */
+const LIBS = {
+  zxing: 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js',
+  tess: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'
+};
+const scriptCache = {};
+function loadScript(url) {
+  if (!scriptCache[url]) scriptCache[url] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = url; s.async = true;
+    s.onload = () => res();
+    s.onerror = () => { delete scriptCache[url]; s.remove(); rej(new Error('โหลดไลบรารีไม่สำเร็จ ตรวจอินเทอร์เน็ต')); };
+    document.head.appendChild(s);
+  });
+  return scriptCache[url];
+}
+let nativeDet;
+async function nativeDetector() {
+  if (nativeDet !== undefined) return nativeDet;
+  nativeDet = null;
+  try {
+    if ('BarcodeDetector' in window) {
+      const f = await window.BarcodeDetector.getSupportedFormats();
+      if (f && f.length) nativeDet = new window.BarcodeDetector({ formats: f });
+    }
+  } catch (e) { nativeDet = null; }
+  return nativeDet;
+}
+let zx = null;
+async function zxing() {
+  if (zx) return zx;
+  await loadScript(LIBS.zxing);
+  const Z = window.ZXing; const hints = new Map();
+  hints.set(Z.DecodeHintType.TRY_HARDER, true);
+  hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, ['QR_CODE', 'CODE_128', 'CODE_39', 'CODE_93', 'EAN_13', 'EAN_8', 'UPC_A', 'UPC_E', 'ITF', 'DATA_MATRIX', 'PDF_417'].map(n => Z.BarcodeFormat[n]).filter(v => v !== undefined));
+  const reader = new Z.MultiFormatReader(); reader.setHints(hints);
+  zx = { Z, reader, hints };
+  return zx;
+}
+function zxDecode(c) {
+  const { Z, reader, hints } = zx;
+  try {
+    const bmp = new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)));
+    const r = reader.decode(bmp, hints);
+    return { text: r.getText(), format: String(Z.BarcodeFormat[r.getBarcodeFormat()] || '') };
+  } catch (e) { return null; } finally { try { reader.reset(); } catch (e) { /* ignore */ } }
+}
+function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
+function crop(src, x, y, w, h, scale = 1) {
+  const c = makeCanvas(w * scale, h * scale);
+  c.getContext('2d', { willReadFrequently: true }).drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
+  return c;
+}
+function rotate90(src) {
+  const c = makeCanvas(src.height, src.width); const g = c.getContext('2d', { willReadFrequently: true });
+  g.translate(c.width, 0); g.rotate(Math.PI / 2); g.drawImage(src, 0, 0); return c;
+}
+async function fileToCanvas(file) {
+  let img;
+  try { img = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch (e) {
+    img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('เปิดรูปนี้ไม่ได้')); im.src = URL.createObjectURL(file); });
+  }
+  const w = img.width || img.naturalWidth, h = img.height || img.naturalHeight;
+  const k = Math.min(1, 1600 / Math.max(w, h));
+  const c = makeCanvas(w * k, h * k);
+  c.getContext('2d', { willReadFrequently: true }).drawImage(img, 0, 0, c.width, c.height);
+  return c;
+}
+const tick = () => new Promise(r => setTimeout(r, 0));
+async function decodeCanvas(c, thorough) {
+  const found = new Map();
+  const add = (text, format) => { const t = String(text || '').trim(); if (t && !found.has(t)) found.set(t, { text: t, format: String(format || '').replace(/_/g, ' ').toUpperCase() }); };
+  const nd = await nativeDetector();
+  if (nd) { try { (await nd.detect(c)).forEach(b => add(b.rawValue, b.format)); } catch (e) { /* ignore */ } }
+  if (!nd || (thorough && !found.size)) {
+    await zxing();
+    const tries = [c];
+    if (thorough) {
+      const bands = src => { const H = src.height, bh = H * 0.34, out = []; for (let y = 0; y < H - bh * 0.5; y += H * 0.165) out.push(crop(src, 0, y, src.width, Math.min(bh, H - y))); return out; };
+      tries.push(...bands(c));
+      const r = rotate90(c); tries.push(r, ...bands(r));
+    }
+    for (const t of tries) { const res = zxDecode(t); if (res) add(res.text, res.format); if (thorough) await tick(); }
+  }
+  return [...found.values()];
+}
+const SN_LABEL = /(?:S\/N|\bSN\b|SER(?:IAL)?\.?\s*(?:NO\.?|NUMBER|#)|\bSERIAL\b|SERVICE\s*TAG|S\.N\.)\s*[:#.\-]?\s*([A-Z0-9][A-Z0-9\-]{4,24})/i;
+function serialFrom(text) {
+  const t = String(text).trim();
+  if (/^https?:\/\//i.test(t)) {
+    try {
+      const u = new URL(t);
+      for (const [k, v] of u.searchParams) if (/^(sn|serial|serialno|serialnumber|serial_number|servicetag|st)$/i.test(k) && v.trim()) return { value: v.trim().toUpperCase(), why: 'S/N ในลิงก์ของ QR' };
+      const m = decodeURIComponent(u.pathname + u.hash).match(/(?:sn|serial(?:number)?|servicetag)[=\/:\-]([A-Z0-9\-]{5,})/i);
+      if (m) return { value: m[1].toUpperCase(), why: 'S/N ในลิงก์ของ QR' };
+    } catch (e) { /* not a URL */ }
+    return null;
+  }
+  let m = t.match(SN_LABEL);
+  if (m && !/^(NO|NUMBER)$/i.test(m[1])) return { value: m[1].toUpperCase(), why: 'มีคำว่า S/N กำกับ' };
+  m = t.match(/^1S([A-Z0-9]{10})([A-Z0-9]{8})$/i);
+  if (m) return { value: m[2].toUpperCase(), why: `บาร์โค้ด Lenovo (1S + รุ่น ${m[1].toUpperCase()} + S/N)` };
+  return null;
+}
+function findExisting(value) {
+  const v = String(value || '').trim().toLowerCase();
+  if (NOT_ID.has(v)) return null;
+  return S.rows.find(r => ['pserial', 'asset', 'host'].some(k => lower(get(r, k)) === v)) || null;
+}
+function candidatesFromCodes(codes) {
+  const items = [];
+  for (const c of codes) {
+    const s = serialFrom(c.text);
+    if (s) items.push({ value: s.value, why: s.why, from: c.format, score: 3 });
+    items.push({ value: c.text, why: c.format ? `บาร์โค้ด ${c.format}` : 'บาร์โค้ด', from: c.format, score: s ? 0 : 1 });
+  }
+  return items;
+}
+function candidatesFromText(text) {
+  const items = []; const T = String(text || '');
+  for (const m of T.matchAll(new RegExp(SN_LABEL.source, 'gi'))) if (!/^(NO|NUMBER)$/i.test(m[1])) items.push({ value: m[1].toUpperCase(), why: 'OCR: อยู่หลังคำว่า S/N', score: 3 });
+  for (const m of T.toUpperCase().matchAll(/\b[A-Z0-9][A-Z0-9\-]{5,23}\b/g)) if (/[A-Z]/.test(m[0]) && /\d/.test(m[0])) items.push({ value: m[0], why: 'OCR: ข้อความบนป้าย', score: 0 });
+  return items;
+}
+function rankCandidates(items) {
+  const seen = new Map();
+  for (const it of items) {
+    const v = String(it.value || '').trim(); if (!v || v.length > 64) continue;
+    let score = it.score || 0;
+    const hit = findExisting(v);
+    if (hit) score += 2;
+    if (/^[A-Z0-9\-]{5,24}$/i.test(v) && /[A-Z]/i.test(v) && /\d/.test(v)) score += 1;
+    if (/^\d{8,14}$/.test(v) && /EAN|UPC/i.test(it.from || '')) score -= 2;
+    if (/^https?:/i.test(v)) score -= 3;
+    const key = v.toLowerCase(), prev = seen.get(key);
+    if (!prev || prev.score < score) seen.set(key, { ...it, value: v, score, hit });
+  }
+  return [...seen.values()].sort((a, b) => b.score - a.score);
+}
+const OCR_PROMPT = 'The image is a photo of an IT equipment label (laptop, monitor, phone, accessory or network device). Read the printed text. Reply with only JSON: {"serial": string or null, "model": string or null, "manufacturer": string or null, "other_codes": [string]}. "serial" is the serial number (S/N, Serial No., Service Tag): copy it character by character exactly as printed, uppercase, no spaces. "model" is the product model name, for example "ThinkPad E14 Gen 5". "other_codes" lists up to 5 other printed IDs (P/N, MTM, MAC). Use null when it is not visible. Never guess.';
+async function ocrWithClaude(blob) {
+  if (!(window.claude && typeof window.claude.use === 'function')) return null;
+  const sample = await window.claude.use('sample');
+  if (!sample) return null;
+  const lim = await sample.limits().catch(() => null);
+  if (!lim || !lim.images) return null;
+  return await sample.json(OCR_PROMPT, { images: [blob] });
+}
+async function ocrWithTesseract(blob, onStatus) {
+  await loadScript(LIBS.tess);
+  onStatus('กำลังโหลดตัวอ่านตัวหนังสือ (ครั้งแรกใช้เวลาสักพัก)…');
+  const worker = await Promise.race([
+    window.Tesseract.createWorker('eng', 1, {
+      logger: m => { if (m.status === 'recognizing text') onStatus(`กำลังอ่านตัวหนังสือ ${Math.round(m.progress * 100)}%`); }
+    }),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('โหลดตัวอ่านตัวหนังสือไม่ทันเวลา ตรวจอินเทอร์เน็ตแล้วลองใหม่')), 90000))
+  ]);
+  try { const { data } = await worker.recognize(blob); return data.text || ''; }
+  finally { worker.terminate(); }
+}
+async function runOcr(blob, onStatus) {
+  try {
+    const r = await ocrWithClaude(blob);
+    if (r && typeof r === 'object') {
+      const items = [];
+      if (r.serial) items.push({ value: String(r.serial).replace(/\s+/g, '').toUpperCase(), why: 'Claude อ่านจากรูป', score: 3 });
+      (Array.isArray(r.other_codes) ? r.other_codes : []).forEach(c => items.push({ value: String(c).trim(), why: 'รหัสอื่นบนป้าย', score: -1 }));
+      const model = r.model ? [r.manufacturer, r.model].filter(Boolean).join(' ').replace(/^(\S+) \1 /i, '$1 ') : null;
+      return { items, model, src: 'Claude' };
+    }
+  } catch (e) {
+    if (!['not_granted', 'sampling_disabled', 'images_unavailable', 'capability_disabled', 'not_declared', 'capability_removed'].includes(e && e.code)) throw e;
+  }
+  const text = await ocrWithTesseract(blob, onStatus);
+  return { items: candidatesFromText(text), model: null, src: 'OCR' };
+}
+
+let scanState = null;
+function scanStatus(t) { const el = $('#scStatus'); if (el) el.textContent = t; }
+function openScanner(opts) {
+  closeScanner();
+  const lookup = opts.mode === 'lookup';
+  $('#scanRoot').innerHTML = `<div class="modal-wrap" data-backdrop><div class="modal mid" role="dialog" aria-modal="true" aria-labelledby="scT">
+    <header><div><h2 id="scT">${lookup ? 'สแกนเพื่อค้นหาเครื่อง' : 'สแกนป้าย S/N'}</h2><p>${lookup ? 'สแกน S/N, Asset tag หรือ Hostname แล้วจะเปิดเครื่องนั้นให้' : 'เล็งบาร์โค้ดหรือ QR บนป้ายใต้เครื่อง หรือถ่ายรูปป้าย'}</p></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header>
+    <div class="body scan-body">
+      <div class="viewfinder" id="vf"><video id="scVideo" playsinline muted></video><canvas id="scShot" hidden></canvas><div class="guide" id="scGuide"></div><div class="vstatus" id="scStatus">กำลังเปิดกล้อง…</div></div>
+      <div class="scan-actions">
+        <label class="btn" for="scFile">${ic('camera')}ถ่ายรูป / เลือกรูป</label><input id="scFile" type="file" accept="image/*" capture="environment" hidden>
+        <button class="btn" type="button" id="scOcr" disabled>${ic('scan-text')}อ่านตัวหนังสือ (OCR)</button>
+        <button class="btn ghost" type="button" id="scLive" hidden>${ic('scan-barcode')}กลับไปใช้กล้องสด</button>
+      </div>
+      <div class="cands" id="scCands"></div>
+    </div>
+    <footer><span class="hint grow">ไม่มีบาร์โค้ด? ถ่ายรูปป้ายแล้วกด “อ่านตัวหนังสือ”</span><button class="btn" type="button" data-close>${lookup ? 'ปิด' : 'พิมพ์เอง'}</button></footer>
+  </div></div>`;
+  const root = $('#scanRoot');
+  scanState = { opts, codes: [], ocrItems: [], items: [], stream: null, timer: null, busy: false, blob: null, done: false, liveOk: false, model: null };
+  $$('[data-close]', root).forEach(b => b.onclick = closeScanner);
+  $('[data-backdrop]', root).addEventListener('mousedown', e => { if (e.target.dataset.backdrop !== undefined) closeScanner(); });
+  $('#scFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) scanPhoto(f); };
+  $('#scOcr').onclick = scanOcr;
+  $('#scLive').onclick = startLive;
+  startLive();
+}
+async function startLive() {
+  const st = scanState; if (!st) return;
+  const video = $('#scVideo');
+  $('#scShot').hidden = true; video.hidden = false; $('#scGuide').hidden = false; $('#scLive').hidden = true;
+  $('#vf').classList.remove('nocam'); st.blob = null;
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nocam');
+    st.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    if (scanState !== st) { st.stream.getTracks().forEach(t => t.stop()); return; }
+    video.srcObject = st.stream; await video.play();
+    st.liveOk = true; $('#scOcr').disabled = false;
+    scanStatus('เล็งบาร์โค้ดหรือ QR ให้อยู่ในกรอบ');
+    try { if (!(await nativeDetector())) await zxing(); } catch (e) { scanStatus('โหลดตัวอ่านบาร์โค้ดไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่'); return; }
+    if (scanState === st && st.stream) st.timer = setInterval(liveTick, 280);
+  } catch (e) {
+    if (scanState !== st) return;
+    video.hidden = true; $('#scGuide').hidden = true; $('#vf').classList.add('nocam');
+    scanStatus(e && e.name === 'NotAllowedError'
+      ? 'กล้องไม่ได้รับอนุญาตในหน้านี้ กด “ถ่ายรูป / เลือกรูป” แทนได้'
+      : 'เปิดกล้องสดในหน้านี้ไม่ได้ กด “ถ่ายรูป / เลือกรูป” แทน');
+  }
+}
+async function liveTick() {
+  const st = scanState; if (!st || st.busy || st.done) return;
+  const v = $('#scVideo'); if (!v || v.readyState < 2 || !v.videoWidth) return;
+  st.busy = true;
+  try {
+    const W = v.videoWidth, H = v.videoHeight, cw = W * 0.84, ch = H * 0.64;
+    const codes = await decodeCanvas(crop(v, W * 0.08, H * 0.18, cw, ch, Math.min(1, 1100 / cw)), false);
+    if (codes.length && scanState === st) handleCodes(codes, 'live');
+  } catch (e) { /* keep scanning */ } finally { st.busy = false; }
+}
+function stopLive() {
+  const st = scanState; if (!st) return;
+  clearInterval(st.timer); st.timer = null;
+  if (st.stream) { st.stream.getTracks().forEach(t => t.stop()); st.stream = null; }
+}
+function closeScanner() { stopLive(); scanState = null; $('#scanRoot').innerHTML = ''; }
+function handleCodes(codes, mode) {
+  const st = scanState; if (!st) return;
+  let added = false;
+  for (const c of codes) if (!st.codes.some(x => x.text === c.text)) { st.codes.push(c); added = true; }
+  if (!added) return;
+  try { if (navigator.vibrate) navigator.vibrate(50); } catch (e) { /* ignore */ }
+  st.items = rankCandidates([...candidatesFromCodes(st.codes), ...st.ocrItems]);
+  drawCands(); maybeAuto(mode);
+}
+function maybeAuto(mode) {
+  const st = scanState; if (!st || !st.items.length) return;
+  const c = st.items, plausible = c.filter(x => x.score >= 2);
+  if (c[0].score >= 3 || (mode !== 'live' && plausible.length === 1 && plausible[0] === c[0])) pick(c[0], true);
+  else if (mode === 'live') scanStatus(`พบ ${st.codes.length} โค้ด เลือกค่าด้านล่าง หรือเล็งโค้ดอื่นต่อ`);
+}
+function drawCands() {
+  const st = scanState; const box = $('#scCands'); if (!st || !box) return;
+  const list = st.items.slice(0, 6), lookup = st.opts.mode === 'lookup';
+  box.innerHTML = list.length ? `<h3>พบ ${st.items.length} ค่า${lookup ? '' : ' เลือกค่าที่เป็น S/N'}</h3>` + list.map((x, i) => `<div class="cand${i === 0 && x.score >= 2 ? ' best' : ''}"><div class="t"><b>${esc(x.value)}</b><small>${esc(x.why)}${x.hit ? ` · เป็นของ ${esc(assetTitle(x.hit))} (${esc(clean(get(x.hit, 'owner')) || '—')})` : ''}</small></div><button class="btn sm${i === 0 ? ' primary' : ''}" type="button" data-pick="${i}">${lookup ? (x.hit ? 'เปิดเครื่องนี้' : 'ค้นหา') : 'ใช้ค่านี้'}</button></div>`).join('') : '';
+  $$('[data-pick]', box).forEach(b => b.onclick = () => pick(list[+b.dataset.pick], false));
+}
+function pick(item, auto) {
+  const st = scanState; if (!st || st.done) return;
+  st.done = true;
+  const opts = st.opts, extra = { model: st.model, why: item.why, auto, hit: item.hit };
+  closeScanner();
+  opts.onPick(item.value, extra);
+}
+async function scanPhoto(file) {
+  const st = scanState; if (!st) return;
+  stopLive();
+  const shot = $('#scShot');
+  $('#scVideo').hidden = true; $('#scGuide').hidden = true; $('#vf').classList.remove('nocam');
+  scanStatus('กำลังอ่านบาร์โค้ดในรูป…');
+  try {
+    const c = await fileToCanvas(file);
+    if (scanState !== st) return;
+    shot.width = c.width; shot.height = c.height; shot.getContext('2d').drawImage(c, 0, 0); shot.hidden = false;
+    $('#scLive').hidden = !st.liveOk;
+    st.blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+    $('#scOcr').disabled = false;
+    await tick();
+    const codes = await decodeCanvas(c, true);
+    if (scanState !== st) return;
+    if (codes.length) { scanStatus(`พบบาร์โค้ด ${codes.length} อันในรูป`); handleCodes(codes, 'photo'); }
+    else scanStatus('ไม่พบบาร์โค้ดในรูป ลองกด “อ่านตัวหนังสือ (OCR)” หรือถ่ายใหม่ให้ชัดและใกล้ขึ้น');
+  } catch (e) { scanStatus('อ่านรูปไม่สำเร็จ: ' + (e && e.message ? e.message : e)); }
+}
+async function scanOcr() {
+  const st = scanState; if (!st) return;
+  const btn = $('#scOcr'); btn.disabled = true;
+  try {
+    let blob = st.blob;
+    if (!blob) {
+      const v = $('#scVideo');
+      if (v && v.readyState >= 2 && v.videoWidth) { const c = crop(v, 0, 0, v.videoWidth, v.videoHeight, Math.min(1, 1600 / v.videoWidth)); blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)); }
+    }
+    if (!blob) { scanStatus('ถ่ายรูปป้ายก่อน แล้วค่อยกดอ่านตัวหนังสือ'); return; }
+    scanStatus('กำลังอ่านตัวหนังสือบนป้าย…');
+    const r = await runOcr(blob, scanStatus);
+    if (scanState !== st) return;
+    st.model = r.model; st.ocrItems = r.items;
+    st.items = rankCandidates([...candidatesFromCodes(st.codes), ...r.items]);
+    drawCands();
+    scanStatus(r.items.length ? `${r.src} อ่านได้ ${r.items.length} ค่า${r.model ? ' · รุ่น ' + r.model : ''}` : 'อ่านตัวหนังสือไม่ออก ลองถ่ายใกล้ขึ้นและให้แสงพอ');
+    if (r.items.length) maybeAuto('ocr');
+  } catch (e) {
+    if (scanState !== st) return;
+    scanStatus(e && e.code === 'rate_limited' ? 'ใช้ Claude อ่านรูปถี่เกินไป รอสักครู่แล้วลองใหม่' : 'อ่านตัวหนังสือไม่สำเร็จ: ' + ((e && (e.message || e.code)) || 'ไม่ทราบสาเหตุ'));
+  } finally { const b = $('#scOcr'); if (b) b.disabled = false; }
+}
+function scanLookup() {
+  openScanner({
+    mode: 'lookup', onPick: async value => {
+      const hit = findExisting(value);
+      if (hit) { if (S.view !== 'assets' && S.view !== 'people') go('assets'); openDrawer(hit.id); toast(`เจอแล้ว: ${assetTitle(hit)} · ${clean(get(hit, 'owner')) || '—'}`); return; }
+      const ok = await confirmDialog('ไม่พบเครื่องนี้ในไฟล์', `ไม่มี S/N, Asset tag หรือ Hostname “${value}” ในชีต ${S.sheetName} ต้องการเพิ่มเป็นเครื่องใหม่ไหม?`, 'เพิ่มเครื่องใหม่');
+      if (ok) openForm(null, { pserial: value });
+    }
+  });
+}
+
+/* ---------- export ---------- */
+function isDateFmt(f) { return !!f && f !== '@' && !/general/i.test(f) && /[dmy]/i.test(f.replace(/"[^"]*"/g, '')); }
+function setCell(cell, v) {
+  if (v instanceof Date) {
+    cell.value = new Date(Date.UTC(v.getUTCFullYear(), v.getUTCMonth(), v.getUTCDate()));
+    if (!isDateFmt(cell.numFmt)) cell.numFmt = 'd-mmm-yy';
+  } else cell.value = isBlank(v) ? null : v;
+}
+async function buildUpdated() {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(S.baseBuf.slice(0));
+  const ws = wb.getWorksheet(S.sheetName);
+  for (const r of S.rows.filter(x => x.state === 'edited')) {
+    const row = ws.getRow(r.excelRow);
+    for (const h of S.headers) if (!sameVal(r.v[h.col], r.orig[h.col])) setCell(row.getCell(h.col), r.v[h.col]);
+  }
+  const adds = S.rows.filter(x => x.state === 'new');
+  const tpl = ws.getRow(Math.max(S.lastDataRow, S.headerRow + 1));
+  adds.forEach((r, i) => {
+    const row = ws.getRow(S.lastDataRow + 1 + i);
+    if (tpl.height) row.height = tpl.height;
+    for (const h of S.headers) {
+      const c = row.getCell(h.col);
+      c.style = JSON.parse(JSON.stringify(tpl.getCell(h.col).style || {}));
+      setCell(c, r.v[h.col]);
+    }
+  });
+  const newLast = S.lastDataRow + adds.length;
+  if (adds.length && ws.autoFilter) {
+    if (typeof ws.autoFilter === 'string') ws.autoFilter = ws.autoFilter.replace(/(\D+)(\d+)$/, (m, a, n) => a + Math.max(+n, newLast));
+    else if (ws.autoFilter.to) {
+      const to = ws.autoFilter.to;
+      if (typeof to === 'string') ws.autoFilter.to = to.replace(/\d+$/, n => Math.max(+n, newLast));
+      else if (typeof to === 'object' && to.row) to.row = Math.max(to.row, newLast);
+    }
+  }
+  return new Uint8Array(await wb.xlsx.writeBuffer());
+}
+const stamp = () => { const d = new Date(); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
+function outName() {
+  const stem = (S.fileName || 'IT_Asset_Inventory.xlsx').replace(/\.xlsx$/i, '').replace(/_updated_\d{8}(-\d{4})?$/, '');
+  return `${stem}_updated_${stamp()}.xlsx`;
+}
+async function saveFile(blob, filename) {
+  if (window.claude && typeof window.claude.use === 'function') {
+    const dl = await window.claude.use('downloads');
+    if (!dl) throw { code: 'unavailable' };
+    await dl.save({ filename, data: blob });
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+function saveError(e) {
+  const code = e && e.code;
+  return code === 'declined' ? 'ยกเลิกการดาวน์โหลดแล้ว' :
+    code === 'unavailable' || code === 'not_granted' ? 'มุมมองนี้ดาวน์โหลดไฟล์ไม่ได้ ลองเปิดหน้านี้ใน claude.ai โดยตรง' :
+    code === 'rate_limited' ? 'มีหน้าต่างดาวน์โหลดเปิดอยู่ ลองอีกครั้งในอีกสักครู่' :
+    'สร้างไฟล์ไม่สำเร็จ: ' + (e && e.message ? e.message : 'ไม่ทราบสาเหตุ');
+}
+async function doExport() {
+  if (S.mode !== 'file' || !S.baseBuf) return;
+  const btn = $('#btnExport'); btn.disabled = true;
+  try {
+    const bytes = await buildUpdated();
+    const name = outName(), n = pendingCount();
+    await saveFile(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), name);
+    await loadBuffer(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), name, null);
+    persist(true); render();
+    toast(`ดาวน์โหลด ${name} แล้ว (${n} รายการ) · ใช้ไฟล์นี้เป็นไฟล์หลักต่อไป`);
+  } catch (e) {
+    console.error(e);
+    toast(e && e.code === 'declined' ? 'ยกเลิกการดาวน์โหลดแล้ว รายการที่แก้ยังอยู่' : saveError(e));
+  } finally { renderPending(); }
+}
+async function exportCsv() {
+  const rows = sortRows(S.rows.filter(r => passes(r)));
+  const q = v => { const t = txt(v instanceof Date ? isoDay(v) : v); return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
+  const lines = [['Status', ...S.headers.map(h => h.label)].map(q).join(','), ...rows.map(r => [STATUS[r._st].label, ...S.headers.map(h => r.v[h.col])].map(q).join(','))];
+  try { await saveFile(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv' }), `assets_${S.f.status}_${stamp()}.csv`); toast(`ส่งออก ${rows.length} รายการเป็น CSV แล้ว`); }
+  catch (e) { toast(saveError(e)); }
+}
+
+/* ---------- small dialogs ---------- */
+function showModal(html) {
+  $('#modalRoot').innerHTML = `<div class="modal-wrap" data-backdrop>${html}</div>`;
+  const root = $('#modalRoot');
+  $$('[data-close]', root).forEach(b => b.onclick = closeModal);
+  $('[data-backdrop]', root).addEventListener('mousedown', e => { if (e.target.dataset.backdrop !== undefined) closeModal(); });
+}
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
+}
+async function copyText(text, okMsg) {
+  try { await navigator.clipboard.writeText(text); toast(okMsg); }
+  catch (e) {
+    showModal(`<div class="modal small" role="dialog" aria-modal="true" aria-labelledby="cT"><header><h2 id="cT">คัดลอกข้อความนี้</h2><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></header><div class="body"><textarea id="copyArea" style="width:100%;min-height:220px;margin-top:12px;font:15px/1.5 var(--font);padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--side)">${esc(text)}</textarea></div><footer><span class="hint grow">กด Ctrl/⌘ + C เพื่อคัดลอก</span><button class="btn" type="button" data-close>ปิด</button></footer></div>`);
+    const ta = $('#copyArea'); ta.focus(); ta.select();
+  }
+}
+function confirmDialog(title, msg, okLabel) {
+  return new Promise(resolve => {
+    showModal(`<div class="modal small" role="alertdialog" aria-modal="true" aria-labelledby="qT"><header><h2 id="qT">${esc(title)}</h2></header><div class="body"><p>${esc(msg)}</p></div><footer><span class="grow"></span><button class="btn" type="button" id="qNo">กลับ</button><button class="btn primary" type="button" id="qYes">${esc(okLabel)}</button></footer></div>`);
+    const done = v => { closeModal(); resolve(v); };
+    $('#qNo').onclick = () => done(false); $('#qYes').onclick = () => done(true); $('#qNo').focus();
+  });
+}
+
+/* ---------- wiring ---------- */
+function wire() {
+  $$('[data-ic]').forEach(el => { el.outerHTML = ic(el.dataset.ic); });
+  const fi = $('#fileInput');
+  fi.onchange = () => openFile(fi.files[0]);
+  $('#btnAdd').onclick = () => {
+    const o = S.view === 'people' ? ownerIndex().find(x => x.key === S.person) : null;
+    openForm(null, o ? { owner: o.label, dept: o.dept } : null);
+  };
+  $('#btnExport').onclick = doExport;
+  $('#btnDiscard').onclick = async () => {
+    if (!(await confirmDialog('ยกเลิกการเปลี่ยนแปลงทั้งหมด?', `รายการที่เพิ่มและแก้ไข ${pendingCount()} รายการจะหายไป ไฟล์ Excel เดิมไม่ถูกแตะ`, 'ยกเลิกทั้งหมด'))) return;
+    S.rows = S.rows.filter(r => r.state !== 'new');
+    S.rows.forEach(r => { if (r.state === 'edited') { r.v = r.orig; r.orig = null; r.state = 'orig'; prep(r); } });
+    closeDrawer(); computeIssues(); persist(false); render(); toast('ยกเลิกการเปลี่ยนแปลงแล้ว');
+  };
+  $('#cmdOpen').onclick = openCmd;
+  $('#btnScan').onclick = scanLookup;
+  $$('.nav a').forEach(a => a.onclick = e => { e.preventDefault(); go(a.dataset.view); });
+  window.addEventListener('hashchange', () => { readHash(); render(); });
+  document.addEventListener('click', closePops);
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); if ($('#cmdRoot').innerHTML) closeCmd(); else openCmd(); return; }
+    if (e.key === '/' && !e.target.closest('input, textarea, select') && !$('#modalRoot').innerHTML) { e.preventDefault(); openCmd(); return; }
+    if (e.key !== 'Escape') return;
+    if ($('#scanRoot').innerHTML) closeScanner();
+    else if ($('#cmdRoot').innerHTML) closeCmd();
+    else if ($('#modalRoot').innerHTML) closeModal();
+    else if ($$('.pop').some(p => !p.hidden)) closePops();
+    else if ($('#drawerRoot').innerHTML) closeDrawer();
+  });
+  let depth = 0;
+  window.addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { depth++; $('#drop').hidden = false; } });
+  window.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) $('#drop').hidden = true; });
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => { e.preventDefault(); depth = 0; $('#drop').hidden = true; const f = e.dataTransfer?.files?.[0]; if (f) openFile(f); });
+  window.addEventListener('beforeunload', () => persist(false));
+}
+
+async function init() {
+  wire();
+  try { const h = JSON.parse(localStorage.getItem(LS_COLS) || 'null'); if (Array.isArray(h)) S.hidden = new Set(h); } catch (e) { /* ignore */ }
+  readHash();
+  let restored = false;
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved && saved.b64) { await loadBuffer(b64ToBuf(saved.b64), saved.name || 'inventory.xlsx', saved.changes); restored = true; }
+    }
+  } catch (e) { console.warn('restore failed', e); }
+  if (!restored) loadSample();
+  buildViews(); render();
+  if (restored) toast(`เปิด ${S.fileName} ต่อจากครั้งก่อน` + (pendingCount() ? ` · มี ${pendingCount()} รายการที่ยังไม่ได้ดาวน์โหลด` : ''));
+}
+init();
+})();
+</script>
+</body>
+</html>
