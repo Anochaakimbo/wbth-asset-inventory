@@ -43,6 +43,10 @@ a { color: inherit; }
 .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
 .btn.ghost:hover { color: var(--ink); background: var(--soft); }
 .btn.danger { color: var(--bad); }
+.btn.danger-solid { background: var(--bad); border-color: var(--bad); color: #fff; }
+.btn.danger-solid:hover { background: #b91c1c; }
+.toast { display: flex; gap: 14px; align-items: center; }
+.toast-act { all: unset; cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .btn.sm { padding: 2px 10px; font-size: 15px; }
 .btn[disabled] { opacity: .45; cursor: not-allowed; }
 .btn .count { background: var(--ink); color: #fff; border-radius: 999px; font-size: 12px; min-width: 18px; padding: 0 5px; line-height: 18px; text-align: center; }
@@ -260,7 +264,8 @@ td.dimc, .dimc { color: #c4c4c8; }
 /* modal */
 .modal-wrap { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.2); }
 .modal-wrap.top { align-items: start; padding-top: 10vh; }
-.modal { background: var(--paper); border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,.14); width: min(860px, 100%); max-height: calc(100% - 16px); display: flex; flex-direction: column; border: 1px solid var(--line); }
+.modal-wrap.top .modal { max-height: calc(90vh - 32px); }
+.modal { background: var(--paper); border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,.14); width: min(860px, 100%); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); display: flex; flex-direction: column; border: 1px solid var(--line); }
 .modal.small { width: min(480px, 100%); }
 .modal.mid { width: min(620px, 100%); }
 .modal header { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; padding: 18px 22px 12px; border-bottom: 1px solid var(--line); }
@@ -402,7 +407,7 @@ legend { font-weight: 600; font-size: 15px; padding: 0; margin-bottom: 6px; }
 <script>
 'use strict';
 (() => {
-const ICONS = {"layout-dashboard":"<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />","laptop":"<path d=\"M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16\" />","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","search":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","plus":"<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />","file-spreadsheet":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M8 13h2\" /> <path d=\"M14 13h2\" /> <path d=\"M8 17h2\" /> <path d=\"M14 17h2\" />","download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\" /> <line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\" /> <line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\" /> <line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\" /> <line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\" /> <line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\" /> <line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\" /> <line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\" /> <line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\" />","columns-3":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M9 3v18\" /> <path d=\"M15 3v18\" />","x":"<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" /> <path d=\"m15 5 4 4\" />","arrow-right-left":"<path d=\"m16 3 4 4-4 4\" /> <path d=\"M20 7H4\" /> <path d=\"m8 21-4-4 4-4\" /> <path d=\"M4 17h16\" />","undo-2":"<path d=\"M9 14 4 9l5-5\" /> <path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\" />","triangle-alert":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />","monitor":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\" /> <line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\" /> <line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\" />","mouse":"<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"7\" /> <path d=\"M12 6v4\" />","headphones":"<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\" />","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />","network":"<rect x=\"16\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"2\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"9\" y=\"2\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3\" /> <path d=\"M12 12V8\" />","cctv":"<path d=\"M16.75 12h3.632a1 1 0 0 1 .894 1.447l-2.034 4.069a1 1 0 0 1-1.708.134l-2.124-2.97\" /> <path d=\"M17.106 9.053a1 1 0 0 1 .447 1.341l-3.106 6.211a1 1 0 0 1-1.342.447L3.61 12.3a2.92 2.92 0 0 1-1.3-3.91L3.69 5.6a2.92 2.92 0 0 1 3.92-1.3z\" /> <path d=\"M2 19h3.76a2 2 0 0 0 1.8-1.1L9 15\" /> <path d=\"M2 21v-4\" /> <path d=\"M7 9h.01\" />","webcam":"<circle cx=\"12\" cy=\"10\" r=\"8\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" /> <path d=\"M7 22h10\" /> <path d=\"M12 22v-4\" />","plug":"<path d=\"M12 22v-5\" /> <path d=\"M9 8V2\" /> <path d=\"M15 8V2\" /> <path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z\" />","speaker":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" /> <path d=\"M12 6h.01\" /> <circle cx=\"12\" cy=\"14\" r=\"4\" /> <path d=\"M12 14h.01\" />","keyboard":"<path d=\"M10 8h.01\" /> <path d=\"M12 12h.01\" /> <path d=\"M14 8h.01\" /> <path d=\"M16 12h.01\" /> <path d=\"M18 8h.01\" /> <path d=\"M6 8h.01\" /> <path d=\"M7 16h10\" /> <path d=\"M8 12h.01\" /> <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" />","tv":"<rect width=\"20\" height=\"15\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\" /> <polyline points=\"17 2 12 7 7 2\" />","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\" /> <path d=\"M12 22V12\" /> <path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\" /> <path d=\"m7.5 4.27 9 5.15\" />","chevron-right":"<path d=\"m9 18 6-6-6-6\" />","folder-open":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\" />","file-down":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />","info":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />","scan-barcode":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M8 7v10\" /> <path d=\"M12 7v10\" /> <path d=\"M17 7v10\" />","scan-text":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M7 8h8\" /> <path d=\"M7 12h10\" /> <path d=\"M7 16h6\" />","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />"};
+const ICONS = {"trash-2":"<path d=\"M3 6h18\" /> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\" /> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\" /> <line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\" /> <line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\" />","layout-dashboard":"<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />","laptop":"<path d=\"M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16\" />","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","search":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","plus":"<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />","file-spreadsheet":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M8 13h2\" /> <path d=\"M14 13h2\" /> <path d=\"M8 17h2\" /> <path d=\"M14 17h2\" />","download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\" /> <line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\" /> <line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\" /> <line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\" /> <line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\" /> <line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\" /> <line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\" /> <line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\" /> <line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\" />","columns-3":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M9 3v18\" /> <path d=\"M15 3v18\" />","x":"<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />","copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />","pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" /> <path d=\"m15 5 4 4\" />","arrow-right-left":"<path d=\"m16 3 4 4-4 4\" /> <path d=\"M20 7H4\" /> <path d=\"m8 21-4-4 4-4\" /> <path d=\"M4 17h16\" />","undo-2":"<path d=\"M9 14 4 9l5-5\" /> <path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\" />","triangle-alert":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","shield-check":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />","monitor":"<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\" /> <line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\" /> <line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\" />","mouse":"<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"7\" /> <path d=\"M12 6v4\" />","headphones":"<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\" />","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />","network":"<rect x=\"16\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"2\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\" /> <rect x=\"9\" y=\"2\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3\" /> <path d=\"M12 12V8\" />","cctv":"<path d=\"M16.75 12h3.632a1 1 0 0 1 .894 1.447l-2.034 4.069a1 1 0 0 1-1.708.134l-2.124-2.97\" /> <path d=\"M17.106 9.053a1 1 0 0 1 .447 1.341l-3.106 6.211a1 1 0 0 1-1.342.447L3.61 12.3a2.92 2.92 0 0 1-1.3-3.91L3.69 5.6a2.92 2.92 0 0 1 3.92-1.3z\" /> <path d=\"M2 19h3.76a2 2 0 0 0 1.8-1.1L9 15\" /> <path d=\"M2 21v-4\" /> <path d=\"M7 9h.01\" />","webcam":"<circle cx=\"12\" cy=\"10\" r=\"8\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" /> <path d=\"M7 22h10\" /> <path d=\"M12 22v-4\" />","plug":"<path d=\"M12 22v-5\" /> <path d=\"M9 8V2\" /> <path d=\"M15 8V2\" /> <path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z\" />","speaker":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" /> <path d=\"M12 6h.01\" /> <circle cx=\"12\" cy=\"14\" r=\"4\" /> <path d=\"M12 14h.01\" />","keyboard":"<path d=\"M10 8h.01\" /> <path d=\"M12 12h.01\" /> <path d=\"M14 8h.01\" /> <path d=\"M16 12h.01\" /> <path d=\"M18 8h.01\" /> <path d=\"M6 8h.01\" /> <path d=\"M7 16h10\" /> <path d=\"M8 12h.01\" /> <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" />","tv":"<rect width=\"20\" height=\"15\" x=\"2\" y=\"7\" rx=\"2\" ry=\"2\" /> <polyline points=\"17 2 12 7 7 2\" />","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\" /> <path d=\"M12 22V12\" /> <path d=\"m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7\" /> <path d=\"m7.5 4.27 9 5.15\" />","chevron-right":"<path d=\"m9 18 6-6-6-6\" />","folder-open":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\" />","file-down":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />","info":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />","scan-barcode":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M8 7v10\" /> <path d=\"M12 7v10\" /> <path d=\"M17 7v10\" />","scan-text":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <path d=\"M7 8h8\" /> <path d=\"M7 12h10\" /> <path d=\"M7 16h6\" />","camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />"};
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ICONS.package}</svg>`;
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
@@ -476,7 +481,7 @@ const COLS = [
 
 const S = {
   mode: 'sample', fileName: '', asOf: '', sheetName: '', headerRow: 0, lastDataRow: 0,
-  headers: [], colByKey: {}, rows: [], mapping: {}, baseBuf: null,
+  headers: [], colByKey: {}, rows: [], deleted: [], mapping: {}, baseBuf: null,
   view: 'overview', person: null, pq: '',
   f: { status: 'all', types: new Set(), sel: {}, issue: null, q: '' },
   sort: { key: null, dir: 1 }, hidden: new Set(COLS.filter(c => c.off).map(c => c.id)), storageOk: true
@@ -671,6 +676,7 @@ function applyParsed(p) {
   S.headers = p.headers; S.mapping = p.mapping; S.colByKey = {};
   for (const h of p.headers) if (h.key) S.colByKey[h.key] = h.col;
   S.rows = p.rows.map(prep);
+  S.deleted = [];
   computeIssues();
 }
 
@@ -714,7 +720,8 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 function snapshotChanges() {
   return {
     adds: S.rows.filter(r => r.state === 'new').map(r => ({ id: r.id, v: r.v })),
-    edits: S.rows.filter(r => r.state === 'edited').map(r => ({ excelRow: r.excelRow, v: r.v }))
+    edits: S.rows.filter(r => r.state === 'edited').map(r => ({ excelRow: r.excelRow, v: r.v })),
+    deletes: S.deleted.filter(r => r.excelRow).map(r => r.excelRow)
   };
 }
 function persist(withBase) {
@@ -735,6 +742,8 @@ function applyChanges(ch) {
     r.orig = { ...r.v }; r.v = e.v; r.state = 'edited'; prep(r);
   }
   for (const a of ch.adds || []) S.rows.push(prep({ id: a.id, excelRow: null, v: a.v, orig: null, state: 'new' }));
+  const del = new Set(ch.deletes || []);
+  if (del.size) { S.deleted = S.rows.filter(r => del.has(r.excelRow)); S.rows = S.rows.filter(r => !del.has(r.excelRow)); }
   computeIssues();
 }
 const reviveDates = obj => JSON.parse(JSON.stringify(obj), (k, val) => (typeof val === 'string' && ISO_RE.test(val) ? new Date(val) : val));
@@ -802,7 +811,7 @@ function readHash() {
 }
 
 /* ---------- render shell ---------- */
-function pendingCount() { return S.rows.filter(r => r.state !== 'orig').length; }
+function pendingCount() { return S.rows.filter(r => r.state !== 'orig').length + S.deleted.length; }
 function render() {
   $$('.nav a').forEach(a => a.setAttribute('aria-current', a.dataset.view === S.view ? 'page' : 'false'));
   $('#navAssets').textContent = S.rows.length;
@@ -825,8 +834,8 @@ function renderFile() {
 function renderPending() {
   const n = pendingCount();
   $('#pending').hidden = n === 0;
-  const adds = S.rows.filter(r => r.state === 'new').length, edits = n - adds;
-  $('#pendingText').innerHTML = `${[adds ? `เพิ่ม <b>${adds}</b>` : '', edits ? `แก้ <b>${edits}</b>` : ''].filter(Boolean).join(' · ')} ยังไม่ได้บันทึกลง Excel`;
+  const adds = S.rows.filter(r => r.state === 'new').length, edits = S.rows.filter(r => r.state === 'edited').length, dels = S.deleted.length;
+  $('#pendingText').innerHTML = `${[adds ? `เพิ่ม <b>${adds}</b>` : '', edits ? `แก้ <b>${edits}</b>` : '', dels ? `ลบ <b>${dels}</b>` : ''].filter(Boolean).join(' · ')} ยังไม่ได้บันทึกลง Excel`;
   const b = $('#btnExport');
   b.disabled = S.mode !== 'file';
   b.title = S.mode === 'file' ? '' : 'เปิดไฟล์จริงก่อนจึงดาวน์โหลดได้';
@@ -1285,7 +1294,7 @@ function openDrawer(id) {
       <div class="dhead">
         <div class="dtop">${iboxHtml(r)}<div class="t"><h2 id="dT">${esc(assetTitle(r))}${mark(r)}</h2><p>${esc(assetSub(r))}</p><div style="margin-top:4px">${statusHtml(r)}</div></div><button class="iconbtn" type="button" data-close aria-label="ปิด">${ic('x')}</button></div>
         <div class="dacts">${r._st === 'returned' ? '' : main}<button class="btn" type="button" id="dEdit">${ic('pencil')}แก้ไข</button><button class="btn" type="button" id="dCopy">${ic('copy')}คัดลอก</button>
-          ${r.state === 'new' ? `<button class="btn danger" type="button" id="dDel">ลบรายการนี้</button>` : ''}${r.state === 'edited' ? `<button class="btn ghost" type="button" id="dRevert">คืนค่าเดิม</button>` : ''}</div>
+          ${r.state === 'edited' ? `<button class="btn ghost" type="button" id="dRevert">คืนค่าเดิม</button>` : ''}<button class="btn ghost danger" type="button" id="dRemove">${ic('trash-2')}ลบ</button></div>
       </div>
       <div class="dbody">${secs.join('')}</div>
       <div class="dfoot">${ic('info')}<span class="grow">${r.excelRow ? `แถว ${r.excelRow} ในชีต ${esc(S.sheetName)}` : 'เพิ่มในหน้านี้ จะต่อท้ายชีตเมื่อดาวน์โหลด Excel'}</span></div>
@@ -1296,7 +1305,7 @@ function openDrawer(id) {
   if ($('#dOut')) $('#dOut').onclick = () => checkoutDialog(r);
   $('#dEdit').onclick = () => openForm(r);
   $('#dCopy').onclick = () => copyText(S.headers.map(h => `${h.label}: ${clean(r.v[h.col])}`).join('\n'), 'คัดลอกข้อมูลอุปกรณ์แล้ว');
-  if ($('#dDel')) $('#dDel').onclick = () => { S.rows = S.rows.filter(x => x !== r); closeDrawer(); afterChange('ลบรายการที่เพิ่มแล้ว'); };
+  $('#dRemove').onclick = () => askRemove(r);
   if ($('#dRevert')) $('#dRevert').onclick = () => { r.v = r.orig; r.orig = null; r.state = 'orig'; prep(r); afterChange('คืนค่าเดิมแล้ว'); };
 }
 function closeDrawer() { const root = $('#drawerRoot'); root.innerHTML = ''; delete root.dataset.id; }
@@ -1840,13 +1849,15 @@ async function buildUpdated() {
       setCell(c, r.v[h.col]);
     }
   });
-  const newLast = S.lastDataRow + adds.length;
-  if (adds.length && ws.autoFilter) {
-    if (typeof ws.autoFilter === 'string') ws.autoFilter = ws.autoFilter.replace(/(\D+)(\d+)$/, (m, a, n) => a + Math.max(+n, newLast));
+  const dels = S.deleted.map(r => r.excelRow).filter(Boolean).sort((a, b) => b - a);
+  for (const rn of dels) ws.spliceRows(rn, 1);
+  const fixEnd = n => Math.max(n, n >= S.lastDataRow ? S.lastDataRow + adds.length : n) - dels.filter(d => d <= n).length;
+  if ((adds.length || dels.length) && ws.autoFilter) {
+    if (typeof ws.autoFilter === 'string') ws.autoFilter = ws.autoFilter.replace(/(\D+)(\d+)$/, (m, a, n) => a + fixEnd(+n));
     else if (ws.autoFilter.to) {
       const to = ws.autoFilter.to;
-      if (typeof to === 'string') ws.autoFilter.to = to.replace(/\d+$/, n => Math.max(+n, newLast));
-      else if (typeof to === 'object' && to.row) to.row = Math.max(to.row, newLast);
+      if (typeof to === 'string') ws.autoFilter.to = to.replace(/\d+$/, n => fixEnd(+n));
+      else if (typeof to === 'object' && to.row) to.row = fixEnd(to.row);
     }
   }
   return new Uint8Array(await wb.xlsx.writeBuffer());
@@ -1907,9 +1918,25 @@ function showModal(html) {
 }
 function closeModal() { $('#modalRoot').innerHTML = ''; }
 let toastTimer;
-function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
+function toast(msg, action) {
+  const t = $('#toast');
+  t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button" class="toast-act">${esc(action.label)}</button>` : ''}`;
+  t.hidden = false;
+  if (action) $('.toast-act', t).onclick = () => { t.hidden = true; action.run(); };
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, action ? 9000 : 4200);
+}
+function orderRows() { S.rows.sort((a, b) => (a.excelRow ?? 1e9) - (b.excelRow ?? 1e9)); }
+async function askRemove(r) {
+  const where = r.state === 'new' ? 'รายการนี้เพิ่งเพิ่มในหน้านี้ จะหายไปเลย' : `${r.excelRow ? `แถว ${r.excelRow}` : 'แถวนี้'} จะถูกลบออกจากชีต ${S.sheetName} ตอนดาวน์โหลด Excel และแถวด้านล่างจะเลื่อนขึ้นมาแทน ถ้าเครื่องแค่ถูกคืนหรือเลิกใช้ แนะนำกด “รับคืน” แทน เพื่อให้ประวัติยังอยู่ในไฟล์`;
+  if (!(await confirmDialog(`ลบ ${assetTitle(r)}?`, where, 'ลบ', true))) return;
+  S.rows = S.rows.filter(x => x !== r);
+  if (r.state !== 'new') S.deleted.push(r);
+  closeDrawer(); computeIssues(); persist(false); render();
+  toast(`ลบ ${assetTitle(r)} แล้ว${r.state !== 'new' && S.mode === 'file' ? ' · จะหายจากไฟล์เมื่อดาวน์โหลด Excel' : ''}`, { label: 'เลิกทำ', run: () => {
+    S.deleted = S.deleted.filter(x => x !== r);
+    if (!S.rows.includes(r)) S.rows.push(r);
+    orderRows(); computeIssues(); persist(false); render(); toast(`เอา ${assetTitle(r)} กลับมาแล้ว`);
+  } });
 }
 async function copyText(text, okMsg) {
   try { await navigator.clipboard.writeText(text); toast(okMsg); }
@@ -1918,9 +1945,9 @@ async function copyText(text, okMsg) {
     const ta = $('#copyArea'); ta.focus(); ta.select();
   }
 }
-function confirmDialog(title, msg, okLabel) {
+function confirmDialog(title, msg, okLabel, danger) {
   return new Promise(resolve => {
-    showModal(`<div class="modal small" role="alertdialog" aria-modal="true" aria-labelledby="qT"><header><h2 id="qT">${esc(title)}</h2></header><div class="body"><p>${esc(msg)}</p></div><footer><span class="grow"></span><button class="btn" type="button" id="qNo">กลับ</button><button class="btn primary" type="button" id="qYes">${esc(okLabel)}</button></footer></div>`);
+    showModal(`<div class="modal small" role="alertdialog" aria-modal="true" aria-labelledby="qT"><header><h2 id="qT">${esc(title)}</h2></header><div class="body"><p>${esc(msg)}</p></div><footer><span class="grow"></span><button class="btn" type="button" id="qNo">กลับ</button><button class="btn ${danger ? 'danger-solid' : 'primary'}" type="button" id="qYes">${esc(okLabel)}</button></footer></div>`);
     const done = v => { closeModal(); resolve(v); };
     $('#qNo').onclick = () => done(false); $('#qYes').onclick = () => done(true); $('#qNo').focus();
   });
@@ -1937,9 +1964,11 @@ function wire() {
   };
   $('#btnExport').onclick = doExport;
   $('#btnDiscard').onclick = async () => {
-    if (!(await confirmDialog('ยกเลิกการเปลี่ยนแปลงทั้งหมด?', `รายการที่เพิ่มและแก้ไข ${pendingCount()} รายการจะหายไป ไฟล์ Excel เดิมไม่ถูกแตะ`, 'ยกเลิกทั้งหมด'))) return;
+    if (!(await confirmDialog('ยกเลิกการเปลี่ยนแปลงทั้งหมด?', `การเพิ่ม แก้ไข และลบ ${pendingCount()} รายการจะถูกยกเลิก แถวที่ลบไว้จะกลับมา ไฟล์ Excel เดิมไม่ถูกแตะ`, 'ยกเลิกทั้งหมด'))) return;
+    S.rows.push(...S.deleted); S.deleted = [];
     S.rows = S.rows.filter(r => r.state !== 'new');
     S.rows.forEach(r => { if (r.state === 'edited') { r.v = r.orig; r.orig = null; r.state = 'orig'; prep(r); } });
+    orderRows();
     closeDrawer(); computeIssues(); persist(false); render(); toast('ยกเลิกการเปลี่ยนแปลงแล้ว');
   };
   $('#cmdOpen').onclick = openCmd;
